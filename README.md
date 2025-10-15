@@ -9,6 +9,7 @@ A personalized career and education advisor platform for students built with Rea
 - **Career Guidance**: Personalized recommendations based on student profile
 - **College & Course Discovery**: Browse and save colleges and courses
 - **Interactive Quizzes**: Career assessment tools
+- **Dark/Light Mode**: Toggle between dark and light themes with automatic system preference detection
 - **Responsive Design**: Mobile-friendly interface with Tailwind CSS
 
 ## Tech Stack
