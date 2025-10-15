@@ -11,7 +11,7 @@ const Home = () => {
             Your Personalized Career & Education Advisor
           </h1>
           <p className="text-xl mb-8 max-w-3xl mx-auto">
-            Discover the right career path, find suitable courses, and explore government colleges 
+            Discover the right career path, find suitable courses, and enpm startxplore government colleges 
             near you with our AI-powered guidance platform.
           </p>
           <div className="flex justify-center space-x-4">
