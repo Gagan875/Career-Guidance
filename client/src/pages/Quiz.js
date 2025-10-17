@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -7,11 +7,12 @@ const Quiz = () => {
   const [answers, setAnswers] = useState([]);
   const [showResults, setShowResults] = useState(false);
   const [results, setResults] = useState(null);
+  const [shuffledQuestions, setShuffledQuestions] = useState([]);
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // Sample quiz questions
-  const questions = [
+  // All quiz questions (expanded with 10 more logical questions)
+  const allQuestions = [
     {
       question: "What type of activities do you enjoy most?",
       options: [
@@ -56,8 +57,117 @@ const Quiz = () => {
         { text: "Building wealth and success", value: "success", points: { science: 1, commerce: 3, arts: 1, vocational: 2 } },
         { text: "Learning practical skills", value: "skills", points: { science: 1, commerce: 2, arts: 1, vocational: 3 } }
       ]
+    },
+    // 10 Additional Logical Questions
+    {
+      question: "When working on a group project, what role do you naturally take?",
+      options: [
+        { text: "The researcher who gathers data and facts", value: "researcher", points: { science: 3, commerce: 1, arts: 2, vocational: 1 } },
+        { text: "The leader who organizes and delegates tasks", value: "leader", points: { science: 1, commerce: 3, arts: 1, vocational: 2 } },
+        { text: "The creative mind who generates innovative ideas", value: "creative", points: { science: 1, commerce: 1, arts: 3, vocational: 2 } },
+        { text: "The implementer who executes the plan", value: "implementer", points: { science: 2, commerce: 2, arts: 1, vocational: 3 } }
+      ]
+    },
+    {
+      question: "Which type of problem-solving approach do you prefer?",
+      options: [
+        { text: "Breaking down complex problems into smaller parts", value: "analytical", points: { science: 3, commerce: 2, arts: 1, vocational: 2 } },
+        { text: "Finding patterns and connections between ideas", value: "pattern", points: { science: 2, commerce: 1, arts: 3, vocational: 1 } },
+        { text: "Using data and statistics to make decisions", value: "data", points: { science: 2, commerce: 3, arts: 0, vocational: 1 } },
+        { text: "Learning by doing and trial-and-error", value: "hands-on", points: { science: 1, commerce: 1, arts: 2, vocational: 3 } }
+      ]
+    },
+    {
+      question: "What type of learning environment helps you focus best?",
+      options: [
+        { text: "Quiet library with access to research materials", value: "library", points: { science: 3, commerce: 1, arts: 2, vocational: 1 } },
+        { text: "Dynamic classroom with discussions and presentations", value: "classroom", points: { science: 1, commerce: 3, arts: 2, vocational: 1 } },
+        { text: "Art studio or creative space with freedom to explore", value: "studio", points: { science: 0, commerce: 1, arts: 3, vocational: 2 } },
+        { text: "Workshop or lab with tools and equipment", value: "workshop", points: { science: 2, commerce: 1, arts: 1, vocational: 3 } }
+      ]
+    },
+    {
+      question: "When faced with a difficult decision, you tend to:",
+      options: [
+        { text: "Research all available options thoroughly", value: "research", points: { science: 3, commerce: 2, arts: 1, vocational: 1 } },
+        { text: "Consider the financial implications first", value: "financial", points: { science: 1, commerce: 3, arts: 0, vocational: 2 } },
+        { text: "Trust your intuition and gut feeling", value: "intuition", points: { science: 0, commerce: 1, arts: 3, vocational: 2 } },
+        { text: "Ask for advice from experienced people", value: "advice", points: { science: 1, commerce: 2, arts: 2, vocational: 3 } }
+      ]
+    },
+    {
+      question: "Which activity would you choose for a weekend hobby?",
+      options: [
+        { text: "Conducting science experiments or coding", value: "experiments", points: { science: 3, commerce: 0, arts: 1, vocational: 2 } },
+        { text: "Reading business magazines or investment books", value: "business", points: { science: 0, commerce: 3, arts: 1, vocational: 1 } },
+        { text: "Writing, painting, or playing musical instruments", value: "arts", points: { science: 0, commerce: 0, arts: 3, vocational: 1 } },
+        { text: "Building, repairing, or crafting things", value: "building", points: { science: 1, commerce: 1, arts: 1, vocational: 3 } }
+      ]
+    },
+    {
+      question: "What type of achievement gives you the most satisfaction?",
+      options: [
+        { text: "Discovering something new or solving a complex puzzle", value: "discovery", points: { science: 3, commerce: 1, arts: 2, vocational: 1 } },
+        { text: "Successfully managing a profitable project", value: "profit", points: { science: 1, commerce: 3, arts: 0, vocational: 2 } },
+        { text: "Creating something beautiful or meaningful", value: "creation", points: { science: 0, commerce: 1, arts: 3, vocational: 2 } },
+        { text: "Mastering a practical skill or technique", value: "mastery", points: { science: 2, commerce: 1, arts: 1, vocational: 3 } }
+      ]
+    },
+    {
+      question: "How do you prefer to communicate your ideas?",
+      options: [
+        { text: "Through detailed reports with facts and figures", value: "reports", points: { science: 3, commerce: 2, arts: 1, vocational: 1 } },
+        { text: "Via presentations with charts and business proposals", value: "presentations", points: { science: 1, commerce: 3, arts: 1, vocational: 1 } },
+        { text: "Through storytelling, art, or creative expression", value: "storytelling", points: { science: 0, commerce: 1, arts: 3, vocational: 1 } },
+        { text: "By demonstrating or showing practical examples", value: "demonstration", points: { science: 2, commerce: 1, arts: 1, vocational: 3 } }
+      ]
+    },
+    {
+      question: "What type of challenge excites you most?",
+      options: [
+        { text: "Solving theoretical problems that require deep thinking", value: "theoretical", points: { science: 3, commerce: 1, arts: 2, vocational: 0 } },
+        { text: "Competing in business competitions or negotiations", value: "competition", points: { science: 1, commerce: 3, arts: 1, vocational: 1 } },
+        { text: "Participating in creative contests or artistic projects", value: "creative-contest", points: { science: 0, commerce: 1, arts: 3, vocational: 2 } },
+        { text: "Building or fixing something with your hands", value: "building-challenge", points: { science: 1, commerce: 1, arts: 1, vocational: 3 } }
+      ]
+    },
+    {
+      question: "When reading about career success stories, which inspires you most?",
+      options: [
+        { text: "Scientists making breakthrough discoveries", value: "scientists", points: { science: 3, commerce: 0, arts: 1, vocational: 1 } },
+        { text: "Entrepreneurs building successful businesses", value: "entrepreneurs", points: { science: 1, commerce: 3, arts: 1, vocational: 2 } },
+        { text: "Artists and writers gaining recognition for their work", value: "artists", points: { science: 0, commerce: 1, arts: 3, vocational: 1 } },
+        { text: "Skilled craftspeople mastering their trade", value: "craftspeople", points: { science: 1, commerce: 1, arts: 2, vocational: 3 } }
+      ]
+    },
+    {
+      question: "What aspect of technology interests you most?",
+      options: [
+        { text: "Understanding how algorithms and systems work", value: "algorithms", points: { science: 3, commerce: 1, arts: 1, vocational: 2 } },
+        { text: "Using technology to improve business efficiency", value: "business-tech", points: { science: 1, commerce: 3, arts: 0, vocational: 2 } },
+        { text: "Creating digital art, content, or user experiences", value: "digital-art", points: { science: 1, commerce: 1, arts: 3, vocational: 2 } },
+        { text: "Building, maintaining, or repairing technical equipment", value: "technical", points: { science: 2, commerce: 1, arts: 0, vocational: 3 } }
+      ]
     }
   ];
+
+  // Shuffle function to randomize questions
+  const shuffleArray = (array) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
+  // Initialize shuffled questions on component mount
+  useEffect(() => {
+    setShuffledQuestions(shuffleArray(allQuestions));
+  }, []);
+
+  // Use shuffled questions instead of static questions
+  const questions = shuffledQuestions;
 
   const handleAnswerSelect = (optionValue) => {
     const newAnswers = [...answers];
@@ -98,6 +208,8 @@ const Quiz = () => {
     setAnswers([]);
     setShowResults(false);
     setResults(null);
+    // Reshuffle questions for a new quiz experience
+    setShuffledQuestions(shuffleArray(allQuestions));
   };
 
   if (showResults) {
@@ -117,10 +229,10 @@ const Quiz = () => {
                       <div className="w-32 bg-gray-200 rounded-full h-2 mr-3">
                         <div 
                           className="bg-primary-600 h-2 rounded-full" 
-                          style={{ width: `${(score / 15) * 100}%` }}
+                          style={{ width: `${(score / 45) * 100}%` }}
                         ></div>
                       </div>
-                      <span className="text-sm font-medium">{score}/15</span>
+                      <span className="text-sm font-medium">{score}/45</span>
                     </div>
                   </div>
                 ))}
@@ -171,6 +283,18 @@ const Quiz = () => {
     );
   }
 
+  // Show loading while questions are being shuffled
+  if (questions.length === 0) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="card text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Preparing your personalized quiz...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="card">
@@ -178,7 +302,7 @@ const Quiz = () => {
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-2xl font-bold">Career Assessment Quiz</h1>
             <span className="text-sm text-gray-600">
-              Question {currentQuestion + 1} of {questions.length}
+              Question {currentQuestion + 1} of {questions.length} (Randomized)
             </span>
           </div>
           
