@@ -5,6 +5,7 @@ require('dotenv').config();
 
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
+const profileRoutes = require('./routes/profile');
 const quizRoutes = require('./routes/quiz');
 const streamQuizRoutes = require('./routes/streamQuiz');
 const collegeRoutes = require('./routes/colleges');
@@ -19,6 +20,7 @@ app.use(express.json());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/profile', profileRoutes);
 app.use('/api/quiz', quizRoutes);
 app.use('/api/stream-quiz', streamQuizRoutes);
 app.use('/api/colleges', collegeRoutes);

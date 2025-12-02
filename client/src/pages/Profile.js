@@ -43,14 +43,41 @@ const Profile = () => {
   const fetchProfile = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/users/profile', {
+      if (!token) {
+        console.log('No token found, using default profile');
+        return;
+      }
+
+      const response = await axios.get('http://localhost:5000/api/profile', {
         headers: { Authorization: `Bearer ${token}` }
       });
-      if (response.data.profile) {
-        setProfile(response.data.profile);
+      
+      if (response.data && response.data.success && response.data.profile) {
+        const profileData = response.data.profile;
+        
+        // Map new profile structure to legacy format for compatibility
+        const fetchedProfile = {
+          age: profileData.personalInfo?.age || '',
+          gender: profileData.personalInfo?.gender || '',
+          class: profileData.academicInfo?.currentClass || '',
+          location: {
+            state: profileData.location?.state || '',
+            district: profileData.location?.district || '',
+            city: profileData.location?.city || ''
+          },
+          interests: profileData.careerPreferences?.interests?.map(interest => interest.name) || [],
+          academicBackground: {
+            stream: profileData.academicInfo?.stream || '',
+            subjects: profileData.academicInfo?.subjects?.map(subject => subject.name) || [],
+            percentage: profileData.academicInfo?.currentPercentage || ''
+          }
+        };
+        setProfile(fetchedProfile);
+        console.log('Profile loaded successfully:', fetchedProfile);
       }
     } catch (error) {
       console.error('Error fetching profile:', error);
+      // Keep the default profile state if fetch fails
     }
   };
 
@@ -60,7 +87,7 @@ const Profile = () => {
       setProfile(prev => ({
         ...prev,
         [parent]: {
-          ...prev[parent],
+          ...(prev[parent] || {}), // Handle undefined parent objects
           [child]: value
         }
       }));
@@ -73,24 +100,32 @@ const Profile = () => {
   };
 
   const handleInterestChange = (interest) => {
-    setProfile(prev => ({
-      ...prev,
-      interests: prev.interests.includes(interest)
-        ? prev.interests.filter(i => i !== interest)
-        : [...prev.interests, interest]
-    }));
+    setProfile(prev => {
+      const currentInterests = prev.interests || [];
+      return {
+        ...prev,
+        interests: currentInterests.includes(interest)
+          ? currentInterests.filter(i => i !== interest)
+          : [...currentInterests, interest]
+      };
+    });
   };
 
   const handleSubjectChange = (subject) => {
-    setProfile(prev => ({
-      ...prev,
-      academicBackground: {
-        ...prev.academicBackground,
-        subjects: prev.academicBackground.subjects.includes(subject)
-          ? prev.academicBackground.subjects.filter(s => s !== subject)
-          : [...prev.academicBackground.subjects, subject]
-      }
-    }));
+    setProfile(prev => {
+      const currentAcademicBackground = prev.academicBackground || {};
+      const currentSubjects = currentAcademicBackground.subjects || [];
+      
+      return {
+        ...prev,
+        academicBackground: {
+          ...currentAcademicBackground,
+          subjects: currentSubjects.includes(subject)
+            ? currentSubjects.filter(s => s !== subject)
+            : [...currentSubjects, subject]
+        }
+      };
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -100,10 +135,47 @@ const Profile = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put('http://localhost:5000/api/users/profile', profile, {
+      
+      // Map legacy format to new profile structure
+      const profileData = {
+        personalInfo: {
+          age: profile.age,
+          gender: profile.gender
+        },
+        academicInfo: {
+          currentClass: profile.class,
+          stream: profile.academicBackground.stream,
+          currentPercentage: profile.academicBackground.percentage,
+          subjects: profile.academicBackground.subjects.map(subject => ({
+            name: subject,
+            grade: '',
+            marks: 0,
+            maxMarks: 100
+          }))
+        },
+        location: {
+          state: profile.location.state,
+          district: profile.location.district,
+          city: profile.location.city
+        },
+        careerPreferences: {
+          interests: profile.interests.map(interest => ({
+            category: 'general',
+            name: interest,
+            level: 'medium'
+          }))
+        }
+      };
+
+      const response = await axios.put('http://localhost:5000/api/profile', profileData, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setMessage('Profile updated successfully!');
+      
+      if (response.data.success) {
+        setMessage('Profile updated successfully!');
+      } else {
+        setMessage('Error updating profile. Please try again.');
+      }
     } catch (error) {
       setMessage('Error updating profile. Please try again.');
       console.error('Error updating profile:', error);
@@ -178,7 +250,7 @@ const Profile = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">State</label>
                   <input
                     type="text"
-                    value={profile.location.state}
+                    value={profile.location?.state || ''}
                     onChange={(e) => handleInputChange('location.state', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Enter your state"
@@ -188,7 +260,7 @@ const Profile = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">District</label>
                   <input
                     type="text"
-                    value={profile.location.district}
+                    value={profile.location?.district || ''}
                     onChange={(e) => handleInputChange('location.district', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Enter your district"
@@ -198,7 +270,7 @@ const Profile = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
                   <input
                     type="text"
-                    value={profile.location.city}
+                    value={profile.location?.city || ''}
                     onChange={(e) => handleInputChange('location.city', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Enter your city"
@@ -215,7 +287,7 @@ const Profile = () => {
                   <label key={interest} className="flex items-center space-x-2 cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={profile.interests.includes(interest)}
+                      checked={profile.interests?.includes(interest) || false}
                       onChange={() => handleInterestChange(interest)}
                       className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
@@ -233,7 +305,7 @@ const Profile = () => {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Stream</label>
                     <select
-                      value={profile.academicBackground.stream}
+                      value={profile.academicBackground?.stream || ''}
                       onChange={(e) => handleInputChange('academicBackground.stream', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
@@ -250,7 +322,7 @@ const Profile = () => {
                       type="number"
                       step="0.01"
                       max="100"
-                      value={profile.academicBackground.percentage}
+                      value={profile.academicBackground?.percentage || ''}
                       onChange={(e) => handleInputChange('academicBackground.percentage', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="Enter your percentage"
@@ -258,15 +330,15 @@ const Profile = () => {
                   </div>
                 </div>
 
-                {profile.academicBackground.stream && (
+                {profile.academicBackground?.stream && (
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Subjects</label>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                      {subjectOptions[profile.academicBackground.stream]?.map((subject) => (
+                      {subjectOptions[profile.academicBackground?.stream]?.map((subject) => (
                         <label key={subject} className="flex items-center space-x-2 cursor-pointer">
                           <input
                             type="checkbox"
-                            checked={profile.academicBackground.subjects.includes(subject)}
+                            checked={profile.academicBackground?.subjects?.includes(subject) || false}
                             onChange={() => handleSubjectChange(subject)}
                             className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                           />

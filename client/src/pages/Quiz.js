@@ -7,6 +7,7 @@ const Quiz = () => {
   const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState([]);
+  const [selectedOption, setSelectedOption] = useState(null);
   const [showResults, setShowResults] = useState(false);
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -17,7 +18,36 @@ const Quiz = () => {
   // Fetch random questions from database (5 from each stream)
   useEffect(() => {
     fetchQuestions();
-  }, []);
+    // Check for saved results if user is logged in
+    if (user && token) {
+      checkSavedResults();
+    }
+  }, [user, token]);
+
+  const checkSavedResults = async () => {
+    try {
+      console.log('Checking for saved quiz results...');
+      const response = await fetch('http://localhost:5000/api/stream-quiz/results', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const savedResults = await response.json();
+        if (savedResults && savedResults.length > 0) {
+          console.log('Found saved quiz results:', savedResults);
+          // Get the most recent result
+          const latestResult = savedResults[0];
+          setResults(latestResult.results);
+          // Optionally show a message that previous results were loaded
+          console.log('Loaded previous quiz results from:', latestResult.completedAt);
+        }
+      }
+    } catch (error) {
+      console.log('No saved results found or error loading:', error);
+    }
+  };
 
   const fetchQuestions = async () => {
     try {
@@ -81,6 +111,8 @@ const Quiz = () => {
   };
 
   const handleAnswerSelect = (optionValue) => {
+    setSelectedOption(optionValue);
+    
     const newAnswers = [...answers];
     newAnswers[currentQuestion] = {
       questionId: questions[currentQuestion]._id,
@@ -88,11 +120,15 @@ const Quiz = () => {
     };
     setAnswers(newAnswers);
 
-    if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-    } else {
-      submitQuiz(newAnswers);
-    }
+    // Add a small delay to show the selection before moving to next question
+    setTimeout(() => {
+      if (currentQuestion < questions.length - 1) {
+        setCurrentQuestion(currentQuestion + 1);
+        setSelectedOption(null); // Reset selection for next question
+      } else {
+        submitQuiz(newAnswers);
+      }
+    }, 500);
   };
 
   const submitQuiz = async (finalAnswers) => {
@@ -101,41 +137,65 @@ const Quiz = () => {
       console.log('User token available:', !!token);
       console.log('User info:', user);
 
+      // Calculate results locally first
+      const localResults = calculateResults(finalAnswers);
+
       if (!token) {
-        console.log('No token - using local calculation');
-        console.log('Calling calculateLocalResults with:', finalAnswers);
-        // For non-authenticated users, calculate basic results
-        calculateLocalResults(finalAnswers);
+        console.log('No token - showing local results only');
+        setResults(localResults);
+        setShowResults(true);
         return;
       }
 
-      console.log('Submitting to server...');
+      console.log('Submitting to server for permanent storage...');
+      
+      // Prepare data for server submission
+      const submissionData = {
+        answers: finalAnswers,
+        results: localResults,
+        completedAt: new Date().toISOString(),
+        quizType: 'career-assessment'
+      };
+
       const response = await fetch('http://localhost:5000/api/stream-quiz/submit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ answers: finalAnswers })
+        body: JSON.stringify(submissionData)
       });
 
       if (!response.ok) {
-        throw new Error('Failed to submit quiz');
+        console.warn('Server submission failed, using local results');
+        // Still show results even if server save fails
+        setResults(localResults);
+        setShowResults(true);
+        return;
       }
 
-      const data = await response.json();
-      console.log('Server response:', data);
-      setResults(data);
+      const serverResponse = await response.json();
+      console.log('Quiz results saved to server:', serverResponse);
+      
+      // Add success message to results
+      localResults.savedToServer = true;
+      localResults.saveMessage = "Results saved to your account!";
+      
+      // Use local results for display (more reliable)
+      setResults(localResults);
       setShowResults(true);
+      
     } catch (error) {
       console.error('Error submitting quiz:', error);
-      // Fallback to local calculation
-      calculateLocalResults(finalAnswers);
+      // Always fallback to local calculation and display
+      const localResults = calculateResults(finalAnswers);
+      setResults(localResults);
+      setShowResults(true);
     }
   };
 
-  const calculateLocalResults = (finalAnswers) => {
-    console.log('=== calculateLocalResults called ===');
+  const calculateResults = (finalAnswers) => {
+    console.log('=== calculateResults called ===');
     console.log('finalAnswers:', finalAnswers);
     console.log('questions available:', questions.length);
 
@@ -157,14 +217,15 @@ const Quiz = () => {
       console.log('localStorage after save:', localStorage.getItem('usedQuestions').substring(0, 100) + '...');
     }
 
-    const streamScores = {
+    // Track correct answers per stream (out of 5 questions each)
+    const streamCorrectAnswers = {
       science: 0,
       commerce: 0,
       arts: 0,
       diploma: 0
     };
 
-    let correctAnswers = 0;
+    let totalCorrectAnswers = 0;
 
     finalAnswers.forEach((answer, index) => {
       console.log(`Processing answer ${index + 1}:`, answer);
@@ -180,14 +241,12 @@ const Quiz = () => {
           console.log(`Selected option: "${selectedOption.text}" - Correct: ${selectedOption.isCorrect}`);
 
           if (selectedOption.isCorrect) {
-            // Correct answer: strong indication of aptitude in this stream
-            streamScores[question.stream] += 3;
-            correctAnswers += 1;
-            console.log(`Added 3 points to ${question.stream} (correct answer)`);
+            // Count correct answers per stream
+            streamCorrectAnswers[question.stream] += 1;
+            totalCorrectAnswers += 1;
+            console.log(`Correct answer in ${question.stream} (${streamCorrectAnswers[question.stream]}/5)`);
           } else {
-            // Incorrect answer: still shows some engagement with the subject
-            streamScores[question.stream] += 1;
-            console.log(`Added 1 point to ${question.stream} (incorrect answer)`);
+            console.log(`Incorrect answer in ${question.stream}`);
           }
         } else {
           console.log('No matching option found for:', answer.selectedOptionId);
@@ -197,15 +256,16 @@ const Quiz = () => {
       }
     });
 
-    const totalScore = Object.values(streamScores).reduce((sum, score) => sum + score, 0);
+    // Calculate percentage of correct answers per stream (out of 5 questions each)
     const streamPercentages = {};
+    
+    console.log('Stream correct answers:', streamCorrectAnswers);
+    console.log('Total correct answers:', totalCorrectAnswers, 'out of', finalAnswers.length);
 
-    console.log('Stream scores after calculation:', streamScores);
-    console.log('Total score:', totalScore);
-    console.log('Correct answers:', correctAnswers, 'out of', finalAnswers.length);
-
-    for (const [stream, score] of Object.entries(streamScores)) {
-      streamPercentages[stream] = totalScore > 0 ? Math.round((score / totalScore) * 100) : 0;
+    for (const [stream, correctCount] of Object.entries(streamCorrectAnswers)) {
+      // Each stream has 5 questions, so percentage = (correct/5) * 100
+      streamPercentages[stream] = Math.round((correctCount / 5) * 100);
+      console.log(`${stream}: ${correctCount}/5 = ${streamPercentages[stream]}%`);
     }
 
     console.log('Stream percentages:', streamPercentages);
@@ -217,23 +277,26 @@ const Quiz = () => {
     const recommendations = sortedStreams.map(([stream, percentage]) => ({
       stream,
       percentage,
-      score: streamScores[stream]
+      correctCount: streamCorrectAnswers[stream],
+      totalQuestions: 5
     }));
 
-    setResults({
+    return {
       totalQuestions: questions.length,
-      correctAnswers,
-      accuracy: Math.round((correctAnswers / questions.length) * 100),
-      streamScores,
+      correctAnswers: totalCorrectAnswers,
+      accuracy: Math.round((totalCorrectAnswers / questions.length) * 100),
+      streamCorrectAnswers,
       streamPercentages,
-      recommendations
-    });
-    setShowResults(true);
+      recommendations,
+      userId: user?._id,
+      completedAt: new Date().toISOString()
+    };
   };
 
   const restartQuiz = () => {
     setCurrentQuestion(0);
     setAnswers([]);
+    setSelectedOption(null);
     setShowResults(false);
     setResults(null);
     fetchQuestions(); // Fetch new random questions
@@ -242,6 +305,7 @@ const Quiz = () => {
   const goToPrevious = () => {
     if (currentQuestion > 0) {
       setCurrentQuestion(currentQuestion - 1);
+      setSelectedOption(null); // Reset selection when going back
     }
   };
 
@@ -286,133 +350,81 @@ const Quiz = () => {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="card text-center">
-          <h1 className="text-3xl font-bold mb-6">Your Career Assessment Results</h1>
-
-          <div className="grid md:grid-cols-2 gap-8 mb-8">
-            <div>
-              <h2 className="text-xl font-semibold mb-4">Stream Analysis</h2>
-              <div className="space-y-3">
-                {Object.entries(results.streamPercentages || results.streamScores).map(([stream, value]) => (
-                  <div key={stream} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <span className="capitalize font-medium">{stream}</span>
-                    <div className="flex items-center">
-                      <div className="w-32 bg-gray-200 rounded-full h-2 mr-3">
-                        <div
-                          className="bg-primary-600 h-2 rounded-full"
-                          style={{ width: `${results.streamPercentages ? value : (value / 5) * 100}%` }}
-                        ></div>
-                      </div>
-                      <span className="text-sm font-medium">
-                        {results.streamPercentages ? `${value}%` : `${value}/5`}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+          <div className="mb-8">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
             </div>
+            <h1 className="text-3xl font-bold mb-4">Quiz Completed!</h1>
+            <p className="text-lg text-gray-600 mb-2">
+              Great job! You've completed the career assessment quiz.
+            </p>
+            <p className="text-gray-500">
+              To get your personalized career recommendations, please take our psychometric test.
+            </p>
+          </div>
 
-            <div>
-              <h2 className="text-xl font-semibold mb-4">Recommended Streams</h2>
-              <div className="space-y-3">
-                {results.recommendations.map((rec, index) => (
-                  <div key={rec.stream} className="p-4 bg-primary-50 rounded-lg border-l-4 border-primary-600">
-                    <div className="flex items-center">
-                      <span className="w-8 h-8 bg-primary-600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3">
-                        {index + 1}
-                      </span>
-                      <div className="text-left">
-                        <h3 className="font-semibold capitalize">{rec.stream} Stream</h3>
-                        <p className="text-sm text-gray-600">
-                          {rec.percentage ? `${rec.percentage}% match` : `${rec.score} questions answered`}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          {rec.stream === 'science' && 'Perfect for analytical minds interested in research and innovation'}
-                          {rec.stream === 'commerce' && 'Ideal for business-minded individuals interested in finance and management'}
-                          {rec.stream === 'arts' && 'Great for creative thinkers interested in humanities and social sciences'}
-                          {rec.stream === 'diploma' && 'Excellent for hands-on learners interested in practical skills'}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+          <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-lg mb-8">
+            <h2 className="text-xl font-semibold mb-3">What's Next?</h2>
+            <p className="text-gray-700 mb-4">
+              Our psychometric assessment will analyze your personality traits, work preferences, 
+              and combine them with your quiz results to provide accurate career recommendations.
+            </p>
+            <div className="flex items-center justify-center text-sm text-gray-600">
+              <span className="flex items-center mr-4">
+                <svg className="w-4 h-4 mr-1 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                20 Questions
+              </span>
+              <span className="flex items-center mr-4">
+                <svg className="w-4 h-4 mr-1 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                </svg>
+                5-7 Minutes
+              </span>
+              <span className="flex items-center">
+                <svg className="w-4 h-4 mr-1 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Personalized Results
+              </span>
             </div>
           </div>
 
-          {results.accuracy && (
-            <div className="mb-6 p-4 bg-blue-50 rounded-lg">
-              <h3 className="font-semibold text-blue-800">Quiz Performance</h3>
-              <p className="text-blue-700">
-                You answered {results.correctAnswers} out of {results.totalQuestions} questions
-                ({results.accuracy}% completion rate)
-              </p>
-              <p className="text-sm text-blue-600 mt-1">
-                Questions covered: 5 from each stream (Science, Commerce, Arts, Diploma)
-              </p>
-            </div>
-          )}
-
-          {!user && (
-            <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-              <h3 className="font-semibold text-gray-800">Debug Info (Anonymous User)</h3>
-              <p className="text-sm text-gray-600">
-                Questions used so far: {JSON.parse(localStorage.getItem('usedQuestions') || '[]').length}
-              </p>
-              <p className="text-sm text-gray-600">
-                Quizzes taken: ~{Math.floor(JSON.parse(localStorage.getItem('usedQuestions') || '[]').length / 20)}
-              </p>
-            </div>
-          )}
-
           <div className="flex justify-center space-x-4 flex-wrap gap-2">
+            <button 
+              onClick={() => navigate('/psychometric-test', { state: { quizResults: results } })}
+              className="btn-primary text-lg px-8 py-3"
+            >
+              Take Psychometric Test
+            </button>
             <button onClick={restartQuiz} className="btn-secondary">
               Retake Quiz
             </button>
-            {!user && (
-              <>
-                <button
-                  onClick={() => {
-                    localStorage.removeItem('usedQuestions');
-                    console.log('Cleared localStorage for testing');
-                    alert('Question history cleared! Next quiz will be fresh.');
-                  }}
-                  className="btn-secondary bg-orange-500 hover:bg-orange-600 text-white"
-                >
-                  Clear History (Test)
-                </button>
-                <button
-                  onClick={async () => {
-                    const usedQuestions = JSON.parse(localStorage.getItem('usedQuestions') || '[]');
-                    if (usedQuestions.length === 0) {
-                      alert('No question history to test');
-                      return;
-                    }
-
-                    try {
-                      const url = `http://localhost:5000/api/stream-quiz/test-exclusion?excludeIds=${encodeURIComponent(JSON.stringify(usedQuestions))}`;
-                      const response = await fetch(url);
-                      const data = await response.json();
-                      console.log('Exclusion test result:', data);
-                      alert(`Exclusion test: ${data.exclusionWorking ? 'WORKING' : 'NOT WORKING'}\nExcluded: ${data.excludeCount}\nScience available: ${data.scienceAvailable}/${data.scienceTotal}`);
-                    } catch (error) {
-                      console.error('Test failed:', error);
-                      alert('Test failed - check console');
-                    }
-                  }}
-                  className="btn-secondary bg-blue-500 hover:bg-blue-600 text-white"
-                >
-                  Test Exclusion
-                </button>
-              </>
+            {user && (
+              <button 
+                onClick={() => navigate('/dashboard')} 
+                className="btn-secondary"
+              >
+                View Quiz History
+              </button>
             )}
+          </div>
+
+          <div className="mt-6 text-sm text-gray-500">
             {user ? (
-              <button onClick={() => navigate('/dashboard')} className="btn-primary">
-                View Dashboard
-              </button>
+              <div className="flex items-center justify-center">
+                <svg className="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <p className="text-green-600">
+                  {results?.saveMessage || "Your quiz results are permanently saved to your account"}
+                </p>
+              </div>
             ) : (
-              <button onClick={() => navigate('/register')} className="btn-primary">
-                Sign Up to Save Results
-              </button>
+              <p>Your quiz results are saved locally. Sign up to save permanently!</p>
             )}
           </div>
         </div>
@@ -462,20 +474,40 @@ const Quiz = () => {
           </h2>
 
           <div className="space-y-3">
-            {currentQ.options.map((option, index) => (
-              <button
-                key={option.value}
-                onClick={() => handleAnswerSelect(option.value)}
-                className="w-full p-4 text-left border-2 border-gray-200 rounded-lg hover:border-primary-500 hover:bg-primary-50 transition-colors"
-              >
-                <div className="flex items-center">
-                  <span className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-sm font-medium mr-3">
-                    {String.fromCharCode(65 + index)}
-                  </span>
-                  {option.text}
-                </div>
-              </button>
-            ))}
+            {currentQ.options.map((option, index) => {
+              const isSelected = selectedOption === option.value;
+              const previouslyAnswered = answers[currentQuestion]?.selectedOptionId === option.value;
+              
+              return (
+                <button
+                  key={option.value}
+                  onClick={() => handleAnswerSelect(option.value)}
+                  disabled={selectedOption !== null}
+                  className={`w-full p-4 text-left border-2 rounded-lg transition-all duration-300 ${
+                    isSelected
+                      ? 'border-primary-600 bg-primary-100 shadow-md transform scale-[1.02]'
+                      : previouslyAnswered
+                      ? 'border-primary-400 bg-primary-50'
+                      : 'border-gray-200 hover:border-primary-500 hover:bg-primary-50'
+                  } ${selectedOption !== null ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                >
+                  <div className="flex items-center">
+                    <span className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium mr-3 transition-colors ${
+                      isSelected
+                        ? 'bg-primary-600 text-white'
+                        : previouslyAnswered
+                        ? 'bg-primary-400 text-white'
+                        : 'bg-gray-100 text-gray-700'
+                    }`}>
+                      {String.fromCharCode(65 + index)}
+                    </span>
+                    <span className={isSelected ? 'font-medium text-primary-800' : ''}>
+                      {option.text}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
 

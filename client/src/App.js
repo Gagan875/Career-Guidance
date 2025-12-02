@@ -8,6 +8,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Quiz from './pages/Quiz';
+import PsychometricTest from './pages/PsychometricTest';
+import CareerResults from './pages/CareerResults';
 import Colleges from './pages/Colleges';
 import Courses from './pages/Courses';
 import Profile from './pages/Profile';
@@ -30,6 +32,8 @@ function App() {
                 </ProtectedRoute>
               } />
               <Route path="/quiz" element={<Quiz />} />
+              <Route path="/psychometric-test" element={<PsychometricTest />} />
+              <Route path="/career-results" element={<CareerResults />} />
               <Route path="/colleges" element={<Colleges />} />
               <Route path="/courses" element={<Courses />} />
               <Route path="/profile" element={
