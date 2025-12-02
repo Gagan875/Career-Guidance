@@ -193,7 +193,7 @@ const Courses = () => {
         <div className="lg:col-span-1">
           <div className="card sticky top-4">
             <h3 className="text-lg font-semibold mb-4">Filters</h3>
-            
+
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Stream</label>
@@ -206,10 +206,10 @@ const Courses = () => {
                   <option value="science">Science</option>
                   <option value="commerce">Commerce</option>
                   <option value="arts">Arts</option>
-                  <option value="vocational">Vocational</option>
+                  <option value="diploma">Diploma</option>
                 </select>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Degree Level</label>
                 <select
@@ -322,7 +322,7 @@ const Courses = () => {
                           ))}
                         </div>
                       </div>
-                      
+
                       <div>
                         <h4 className="font-semibold text-gray-900 mb-3">Core Subjects</h4>
                         <div className="flex flex-wrap gap-2">

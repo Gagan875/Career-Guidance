@@ -33,7 +33,7 @@ const Profile = () => {
     science: ['Physics', 'Chemistry', 'Mathematics', 'Biology', 'Computer Science'],
     commerce: ['Accountancy', 'Business Studies', 'Economics', 'Mathematics', 'English'],
     arts: ['English', 'History', 'Geography', 'Political Science', 'Psychology', 'Sociology'],
-    vocational: ['Computer Applications', 'Multimedia', 'Tourism', 'Fashion Design', 'Agriculture']
+    diploma: ['Computer Applications', 'Multimedia', 'Tourism', 'Fashion Design', 'Agriculture']
   };
 
   useEffect(() => {
@@ -241,7 +241,7 @@ const Profile = () => {
                       <option value="science">Science</option>
                       <option value="commerce">Commerce</option>
                       <option value="arts">Arts</option>
-                      <option value="vocational">Vocational</option>
+                      <option value="diploma">diploma</option>
                     </select>
                   </div>
                   <div>

@@ -6,12 +6,16 @@ node_modules/
 # Cache directories
 .npm
 .cache/
+**/.cache/
 .parcel-cache/
 .next/
 .nuxt/
 dist/
 build/
 
+# Webpack and build caches
+**/node_modules/.cache/
+**/.eslintcache
 # Environment variables
 .env
 .env.local
