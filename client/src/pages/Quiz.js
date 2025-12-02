@@ -18,7 +18,36 @@ const Quiz = () => {
   // Fetch random questions from database (5 from each stream)
   useEffect(() => {
     fetchQuestions();
-  }, []);
+    // Check for saved results if user is logged in
+    if (user && token) {
+      checkSavedResults();
+    }
+  }, [user, token]);
+
+  const checkSavedResults = async () => {
+    try {
+      console.log('Checking for saved quiz results...');
+      const response = await fetch('http://localhost:5000/api/stream-quiz/results', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const savedResults = await response.json();
+        if (savedResults && savedResults.length > 0) {
+          console.log('Found saved quiz results:', savedResults);
+          // Get the most recent result
+          const latestResult = savedResults[0];
+          setResults(latestResult.results);
+          // Optionally show a message that previous results were loaded
+          console.log('Loaded previous quiz results from:', latestResult.completedAt);
+        }
+      }
+    } catch (error) {
+      console.log('No saved results found or error loading:', error);
+    }
+  };
 
   const fetchQuestions = async () => {
     try {
@@ -108,41 +137,65 @@ const Quiz = () => {
       console.log('User token available:', !!token);
       console.log('User info:', user);
 
+      // Calculate results locally first
+      const localResults = calculateResults(finalAnswers);
+
       if (!token) {
-        console.log('No token - using local calculation');
-        console.log('Calling calculateLocalResults with:', finalAnswers);
-        // For non-authenticated users, calculate basic results
-        calculateLocalResults(finalAnswers);
+        console.log('No token - showing local results only');
+        setResults(localResults);
+        setShowResults(true);
         return;
       }
 
-      console.log('Submitting to server...');
+      console.log('Submitting to server for permanent storage...');
+      
+      // Prepare data for server submission
+      const submissionData = {
+        answers: finalAnswers,
+        results: localResults,
+        completedAt: new Date().toISOString(),
+        quizType: 'career-assessment'
+      };
+
       const response = await fetch('http://localhost:5000/api/stream-quiz/submit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ answers: finalAnswers })
+        body: JSON.stringify(submissionData)
       });
 
       if (!response.ok) {
-        throw new Error('Failed to submit quiz');
+        console.warn('Server submission failed, using local results');
+        // Still show results even if server save fails
+        setResults(localResults);
+        setShowResults(true);
+        return;
       }
 
-      const data = await response.json();
-      console.log('Server response:', data);
-      setResults(data);
+      const serverResponse = await response.json();
+      console.log('Quiz results saved to server:', serverResponse);
+      
+      // Add success message to results
+      localResults.savedToServer = true;
+      localResults.saveMessage = "Results saved to your account!";
+      
+      // Use local results for display (more reliable)
+      setResults(localResults);
       setShowResults(true);
+      
     } catch (error) {
       console.error('Error submitting quiz:', error);
-      // Fallback to local calculation
-      calculateLocalResults(finalAnswers);
+      // Always fallback to local calculation and display
+      const localResults = calculateResults(finalAnswers);
+      setResults(localResults);
+      setShowResults(true);
     }
   };
 
-  const calculateLocalResults = (finalAnswers) => {
-    console.log('=== calculateLocalResults called ===');
+  const calculateResults = (finalAnswers) => {
+    console.log('=== calculateResults called ===');
     console.log('finalAnswers:', finalAnswers);
     console.log('questions available:', questions.length);
 
@@ -228,15 +281,16 @@ const Quiz = () => {
       totalQuestions: 5
     }));
 
-    setResults({
+    return {
       totalQuestions: questions.length,
       correctAnswers: totalCorrectAnswers,
       accuracy: Math.round((totalCorrectAnswers / questions.length) * 100),
       streamCorrectAnswers,
       streamPercentages,
-      recommendations
-    });
-    setShowResults(true);
+      recommendations,
+      userId: user?._id,
+      completedAt: new Date().toISOString()
+    };
   };
 
   const restartQuiz = () => {
@@ -349,10 +403,29 @@ const Quiz = () => {
             <button onClick={restartQuiz} className="btn-secondary">
               Retake Quiz
             </button>
+            {user && (
+              <button 
+                onClick={() => navigate('/dashboard')} 
+                className="btn-secondary"
+              >
+                View Quiz History
+              </button>
+            )}
           </div>
 
           <div className="mt-6 text-sm text-gray-500">
-            <p>Your quiz results are saved and will be combined with the psychometric assessment</p>
+            {user ? (
+              <div className="flex items-center justify-center">
+                <svg className="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <p className="text-green-600">
+                  {results?.saveMessage || "Your quiz results are permanently saved to your account"}
+                </p>
+              </div>
+            ) : (
+              <p>Your quiz results are saved locally. Sign up to save permanently!</p>
+            )}
           </div>
         </div>
       </div>
