@@ -16,7 +16,6 @@ build/
 # Webpack and build caches
 **/node_modules/.cache/
 **/.eslintcache
-
 # Environment variables
 .env
 .env.local
