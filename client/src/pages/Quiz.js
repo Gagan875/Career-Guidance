@@ -7,6 +7,7 @@ const Quiz = () => {
   const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState([]);
+  const [selectedOption, setSelectedOption] = useState(null);
   const [showResults, setShowResults] = useState(false);
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -81,6 +82,8 @@ const Quiz = () => {
   };
 
   const handleAnswerSelect = (optionValue) => {
+    setSelectedOption(optionValue);
+    
     const newAnswers = [...answers];
     newAnswers[currentQuestion] = {
       questionId: questions[currentQuestion]._id,
@@ -88,11 +91,15 @@ const Quiz = () => {
     };
     setAnswers(newAnswers);
 
-    if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-    } else {
-      submitQuiz(newAnswers);
-    }
+    // Add a small delay to show the selection before moving to next question
+    setTimeout(() => {
+      if (currentQuestion < questions.length - 1) {
+        setCurrentQuestion(currentQuestion + 1);
+        setSelectedOption(null); // Reset selection for next question
+      } else {
+        submitQuiz(newAnswers);
+      }
+    }, 500);
   };
 
   const submitQuiz = async (finalAnswers) => {
@@ -234,6 +241,7 @@ const Quiz = () => {
   const restartQuiz = () => {
     setCurrentQuestion(0);
     setAnswers([]);
+    setSelectedOption(null);
     setShowResults(false);
     setResults(null);
     fetchQuestions(); // Fetch new random questions
@@ -242,6 +250,7 @@ const Quiz = () => {
   const goToPrevious = () => {
     if (currentQuestion > 0) {
       setCurrentQuestion(currentQuestion - 1);
+      setSelectedOption(null); // Reset selection when going back
     }
   };
 
@@ -352,59 +361,12 @@ const Quiz = () => {
             </div>
           )}
 
-          {!user && (
-            <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-              <h3 className="font-semibold text-gray-800">Debug Info (Anonymous User)</h3>
-              <p className="text-sm text-gray-600">
-                Questions used so far: {JSON.parse(localStorage.getItem('usedQuestions') || '[]').length}
-              </p>
-              <p className="text-sm text-gray-600">
-                Quizzes taken: ~{Math.floor(JSON.parse(localStorage.getItem('usedQuestions') || '[]').length / 20)}
-              </p>
-            </div>
-          )}
+
 
           <div className="flex justify-center space-x-4 flex-wrap gap-2">
             <button onClick={restartQuiz} className="btn-secondary">
               Retake Quiz
             </button>
-            {!user && (
-              <>
-                <button
-                  onClick={() => {
-                    localStorage.removeItem('usedQuestions');
-                    console.log('Cleared localStorage for testing');
-                    alert('Question history cleared! Next quiz will be fresh.');
-                  }}
-                  className="btn-secondary bg-orange-500 hover:bg-orange-600 text-white"
-                >
-                  Clear History (Test)
-                </button>
-                <button
-                  onClick={async () => {
-                    const usedQuestions = JSON.parse(localStorage.getItem('usedQuestions') || '[]');
-                    if (usedQuestions.length === 0) {
-                      alert('No question history to test');
-                      return;
-                    }
-
-                    try {
-                      const url = `http://localhost:5000/api/stream-quiz/test-exclusion?excludeIds=${encodeURIComponent(JSON.stringify(usedQuestions))}`;
-                      const response = await fetch(url);
-                      const data = await response.json();
-                      console.log('Exclusion test result:', data);
-                      alert(`Exclusion test: ${data.exclusionWorking ? 'WORKING' : 'NOT WORKING'}\nExcluded: ${data.excludeCount}\nScience available: ${data.scienceAvailable}/${data.scienceTotal}`);
-                    } catch (error) {
-                      console.error('Test failed:', error);
-                      alert('Test failed - check console');
-                    }
-                  }}
-                  className="btn-secondary bg-blue-500 hover:bg-blue-600 text-white"
-                >
-                  Test Exclusion
-                </button>
-              </>
-            )}
             {user ? (
               <button onClick={() => navigate('/dashboard')} className="btn-primary">
                 View Dashboard
@@ -462,20 +424,40 @@ const Quiz = () => {
           </h2>
 
           <div className="space-y-3">
-            {currentQ.options.map((option, index) => (
-              <button
-                key={option.value}
-                onClick={() => handleAnswerSelect(option.value)}
-                className="w-full p-4 text-left border-2 border-gray-200 rounded-lg hover:border-primary-500 hover:bg-primary-50 transition-colors"
-              >
-                <div className="flex items-center">
-                  <span className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-sm font-medium mr-3">
-                    {String.fromCharCode(65 + index)}
-                  </span>
-                  {option.text}
-                </div>
-              </button>
-            ))}
+            {currentQ.options.map((option, index) => {
+              const isSelected = selectedOption === option.value;
+              const previouslyAnswered = answers[currentQuestion]?.selectedOptionId === option.value;
+              
+              return (
+                <button
+                  key={option.value}
+                  onClick={() => handleAnswerSelect(option.value)}
+                  disabled={selectedOption !== null}
+                  className={`w-full p-4 text-left border-2 rounded-lg transition-all duration-300 ${
+                    isSelected
+                      ? 'border-primary-600 bg-primary-100 shadow-md transform scale-[1.02]'
+                      : previouslyAnswered
+                      ? 'border-primary-400 bg-primary-50'
+                      : 'border-gray-200 hover:border-primary-500 hover:bg-primary-50'
+                  } ${selectedOption !== null ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                >
+                  <div className="flex items-center">
+                    <span className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium mr-3 transition-colors ${
+                      isSelected
+                        ? 'bg-primary-600 text-white'
+                        : previouslyAnswered
+                        ? 'bg-primary-400 text-white'
+                        : 'bg-gray-100 text-gray-700'
+                    }`}>
+                      {String.fromCharCode(65 + index)}
+                    </span>
+                    <span className={isSelected ? 'font-medium text-primary-800' : ''}>
+                      {option.text}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
 
