@@ -164,14 +164,15 @@ const Quiz = () => {
       console.log('localStorage after save:', localStorage.getItem('usedQuestions').substring(0, 100) + '...');
     }
 
-    const streamScores = {
+    // Track correct answers per stream (out of 5 questions each)
+    const streamCorrectAnswers = {
       science: 0,
       commerce: 0,
       arts: 0,
       diploma: 0
     };
 
-    let correctAnswers = 0;
+    let totalCorrectAnswers = 0;
 
     finalAnswers.forEach((answer, index) => {
       console.log(`Processing answer ${index + 1}:`, answer);
@@ -187,14 +188,12 @@ const Quiz = () => {
           console.log(`Selected option: "${selectedOption.text}" - Correct: ${selectedOption.isCorrect}`);
 
           if (selectedOption.isCorrect) {
-            // Correct answer: strong indication of aptitude in this stream
-            streamScores[question.stream] += 3;
-            correctAnswers += 1;
-            console.log(`Added 3 points to ${question.stream} (correct answer)`);
+            // Count correct answers per stream
+            streamCorrectAnswers[question.stream] += 1;
+            totalCorrectAnswers += 1;
+            console.log(`Correct answer in ${question.stream} (${streamCorrectAnswers[question.stream]}/5)`);
           } else {
-            // Incorrect answer: still shows some engagement with the subject
-            streamScores[question.stream] += 1;
-            console.log(`Added 1 point to ${question.stream} (incorrect answer)`);
+            console.log(`Incorrect answer in ${question.stream}`);
           }
         } else {
           console.log('No matching option found for:', answer.selectedOptionId);
@@ -204,15 +203,16 @@ const Quiz = () => {
       }
     });
 
-    const totalScore = Object.values(streamScores).reduce((sum, score) => sum + score, 0);
+    // Calculate percentage of correct answers per stream (out of 5 questions each)
     const streamPercentages = {};
+    
+    console.log('Stream correct answers:', streamCorrectAnswers);
+    console.log('Total correct answers:', totalCorrectAnswers, 'out of', finalAnswers.length);
 
-    console.log('Stream scores after calculation:', streamScores);
-    console.log('Total score:', totalScore);
-    console.log('Correct answers:', correctAnswers, 'out of', finalAnswers.length);
-
-    for (const [stream, score] of Object.entries(streamScores)) {
-      streamPercentages[stream] = totalScore > 0 ? Math.round((score / totalScore) * 100) : 0;
+    for (const [stream, correctCount] of Object.entries(streamCorrectAnswers)) {
+      // Each stream has 5 questions, so percentage = (correct/5) * 100
+      streamPercentages[stream] = Math.round((correctCount / 5) * 100);
+      console.log(`${stream}: ${correctCount}/5 = ${streamPercentages[stream]}%`);
     }
 
     console.log('Stream percentages:', streamPercentages);
@@ -224,14 +224,15 @@ const Quiz = () => {
     const recommendations = sortedStreams.map(([stream, percentage]) => ({
       stream,
       percentage,
-      score: streamScores[stream]
+      correctCount: streamCorrectAnswers[stream],
+      totalQuestions: 5
     }));
 
     setResults({
       totalQuestions: questions.length,
-      correctAnswers,
-      accuracy: Math.round((correctAnswers / questions.length) * 100),
-      streamScores,
+      correctAnswers: totalCorrectAnswers,
+      accuracy: Math.round((totalCorrectAnswers / questions.length) * 100),
+      streamCorrectAnswers,
       streamPercentages,
       recommendations
     });
@@ -295,87 +296,63 @@ const Quiz = () => {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="card text-center">
-          <h1 className="text-3xl font-bold mb-6">Your Career Assessment Results</h1>
-
-          <div className="grid md:grid-cols-2 gap-8 mb-8">
-            <div>
-              <h2 className="text-xl font-semibold mb-4">Stream Analysis</h2>
-              <div className="space-y-3">
-                {Object.entries(results.streamPercentages || results.streamScores).map(([stream, value]) => (
-                  <div key={stream} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <span className="capitalize font-medium">{stream}</span>
-                    <div className="flex items-center">
-                      <div className="w-32 bg-gray-200 rounded-full h-2 mr-3">
-                        <div
-                          className="bg-primary-600 h-2 rounded-full"
-                          style={{ width: `${results.streamPercentages ? value : (value / 5) * 100}%` }}
-                        ></div>
-                      </div>
-                      <span className="text-sm font-medium">
-                        {results.streamPercentages ? `${value}%` : `${value}/5`}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+          <div className="mb-8">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
             </div>
+            <h1 className="text-3xl font-bold mb-4">Quiz Completed!</h1>
+            <p className="text-lg text-gray-600 mb-2">
+              Great job! You've completed the career assessment quiz.
+            </p>
+            <p className="text-gray-500">
+              To get your personalized career recommendations, please take our psychometric test.
+            </p>
+          </div>
 
-            <div>
-              <h2 className="text-xl font-semibold mb-4">Recommended Streams</h2>
-              <div className="space-y-3">
-                {results.recommendations.map((rec, index) => (
-                  <div key={rec.stream} className="p-4 bg-primary-50 rounded-lg border-l-4 border-primary-600">
-                    <div className="flex items-center">
-                      <span className="w-8 h-8 bg-primary-600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3">
-                        {index + 1}
-                      </span>
-                      <div className="text-left">
-                        <h3 className="font-semibold capitalize">{rec.stream} Stream</h3>
-                        <p className="text-sm text-gray-600">
-                          {rec.percentage ? `${rec.percentage}% match` : `${rec.score} questions answered`}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          {rec.stream === 'science' && 'Perfect for analytical minds interested in research and innovation'}
-                          {rec.stream === 'commerce' && 'Ideal for business-minded individuals interested in finance and management'}
-                          {rec.stream === 'arts' && 'Great for creative thinkers interested in humanities and social sciences'}
-                          {rec.stream === 'diploma' && 'Excellent for hands-on learners interested in practical skills'}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+          <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-lg mb-8">
+            <h2 className="text-xl font-semibold mb-3">What's Next?</h2>
+            <p className="text-gray-700 mb-4">
+              Our psychometric assessment will analyze your personality traits, work preferences, 
+              and combine them with your quiz results to provide accurate career recommendations.
+            </p>
+            <div className="flex items-center justify-center text-sm text-gray-600">
+              <span className="flex items-center mr-4">
+                <svg className="w-4 h-4 mr-1 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                20 Questions
+              </span>
+              <span className="flex items-center mr-4">
+                <svg className="w-4 h-4 mr-1 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                </svg>
+                5-7 Minutes
+              </span>
+              <span className="flex items-center">
+                <svg className="w-4 h-4 mr-1 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Personalized Results
+              </span>
             </div>
           </div>
 
-          {results.accuracy && (
-            <div className="mb-6 p-4 bg-blue-50 rounded-lg">
-              <h3 className="font-semibold text-blue-800">Quiz Performance</h3>
-              <p className="text-blue-700">
-                You answered {results.correctAnswers} out of {results.totalQuestions} questions
-                ({results.accuracy}% completion rate)
-              </p>
-              <p className="text-sm text-blue-600 mt-1">
-                Questions covered: 5 from each stream (Science, Commerce, Arts, Diploma)
-              </p>
-            </div>
-          )}
-
-
-
           <div className="flex justify-center space-x-4 flex-wrap gap-2">
+            <button 
+              onClick={() => navigate('/psychometric-test', { state: { quizResults: results } })}
+              className="btn-primary text-lg px-8 py-3"
+            >
+              Take Psychometric Test
+            </button>
             <button onClick={restartQuiz} className="btn-secondary">
               Retake Quiz
             </button>
-            {user ? (
-              <button onClick={() => navigate('/dashboard')} className="btn-primary">
-                View Dashboard
-              </button>
-            ) : (
-              <button onClick={() => navigate('/register')} className="btn-primary">
-                Sign Up to Save Results
-              </button>
-            )}
+          </div>
+
+          <div className="mt-6 text-sm text-gray-500">
+            <p>Your quiz results are saved and will be combined with the psychometric assessment</p>
           </div>
         </div>
       </div>
