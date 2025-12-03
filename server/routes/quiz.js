@@ -45,7 +45,7 @@ router.post('/:id/submit', auth, async (req, res) => {
       science: 0,
       commerce: 0,
       arts: 0,
-      vocational: 0
+      diploma: 0
     };
 
     answers.forEach((answer, index) => {
@@ -56,7 +56,7 @@ router.post('/:id/submit', auth, async (req, res) => {
         scores.science += selectedOption.points.science || 0;
         scores.commerce += selectedOption.points.commerce || 0;
         scores.arts += selectedOption.points.arts || 0;
-        scores.vocational += selectedOption.points.vocational || 0;
+        scores.diploma += selectedOption.points.diploma || 0;
       }
     });
 
