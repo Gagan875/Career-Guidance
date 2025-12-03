@@ -207,6 +207,7 @@ const Courses = () => {
                   <option value="commerce">Commerce</option>
                   <option value="arts">Arts</option>
                   <option value="diploma">Diploma</option>
+                  <option value="diploma">Diplomaa</option>
                 </select>
               </div>
 

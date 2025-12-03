@@ -30,10 +30,23 @@ A personalized career and education advisor platform for students built with Rea
 
 ### Prerequisites
 - Node.js (v14 or higher)
-- MongoDB (local or cloud instance)
+- MongoDB (local or cloud instance) - **See [MongoDB Setup Guide](MONGODB_SETUP.md)**
 - npm or yarn
 
-### Installation
+### Team Setup (No MongoDB Installation Required!) 🎉
+
+```bash
+git clone <repository-url>
+cd digital-guidance-platform
+npm run setup
+npm run dev
+```
+
+**That's it!** The project uses a shared team database - no individual MongoDB setup needed.
+
+See [TEAM_SETUP.md](TEAM_SETUP.md) for team member instructions.
+
+### Manual Installation
 
 1. Clone the repository
 ```bash
@@ -46,18 +59,27 @@ cd digital-guidance-platform
 npm run install-all
 ```
 
-3. Set up environment variables
-Create a `.env` file in the `server` directory with:
+3. **Set up MongoDB** - Follow the detailed [MongoDB Setup Guide](MONGODB_SETUP.md)
+
+4. Set up environment variables
+```bash
+# Copy the environment template
+cp server/.env.example server/.env
 ```
-PORT=5000
-MONGODB_URI=mongodb://localhost:27017/digital_guidance_platform
-JWT_SECRET=your_jwt_secret_key_here
-NODE_ENV=development
+Then edit `server/.env` with your MongoDB connection details.
+
+5. Test your MongoDB connection
+```bash
+cd server
+npm run test-connection
 ```
 
-4. Start MongoDB service (if running locally)
+6. Initialize the database with sample data
+```bash
+npm run seed-questions
+```
 
-5. Run the application
+7. Run the application
 ```bash
 npm run dev
 ```
