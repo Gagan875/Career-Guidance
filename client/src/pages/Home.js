@@ -1,7 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import QuizSelectionModal from '../components/QuizSelectionModal';
 
 const Home = () => {
+  const [isQuizModalOpen, setIsQuizModalOpen] = useState(false);
+
+  const openQuizModal = () => setIsQuizModalOpen(true);
+  const closeQuizModal = () => setIsQuizModalOpen(false);
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -15,9 +21,12 @@ const Home = () => {
             near you with our AI-powered guidance platform.
           </p>
           <div className="flex justify-center space-x-4">
-            <Link to="/quiz" className="bg-white dark:bg-gray-100 text-primary-600 dark:text-gray-900 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 dark:hover:bg-gray-200 transition-colors">
+            <button 
+              onClick={openQuizModal}
+              className="bg-white dark:bg-gray-100 text-primary-600 dark:text-gray-900 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 dark:hover:bg-gray-200 transition-colors"
+            >
               Take Career Quiz
-            </Link>
+            </button>
             <Link to="/register" className="border-2 border-white dark:border-gray-300 px-8 py-3 rounded-lg font-semibold hover:bg-white dark:hover:bg-gray-100 hover:text-primary-600 dark:hover:text-gray-900 transition-colors">
               Get Started
             </Link>
@@ -106,6 +115,9 @@ const Home = () => {
           </Link>
         </div>
       </section>
+
+      {/* Quiz Selection Modal */}
+      <QuizSelectionModal isOpen={isQuizModalOpen} onClose={closeQuizModal} />
     </div>
   );
 };

@@ -10,8 +10,9 @@ const PsychometricTest = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Get quiz results from previous page
+  // Get quiz results from previous page (either stream quiz or field quiz)
   const quizResults = location.state?.quizResults;
+  const fieldQuizResults = location.state?.fieldQuizResults;
 
   // Psychometric test questions based on Big Five personality traits + career interests
   const questions = [
@@ -273,6 +274,7 @@ const PsychometricTest = () => {
     navigate('/career-results', {
       state: {
         quizResults,
+        fieldQuizResults,
         psychometricResults: {
           personalityTraits: enhancedScores,
           answers: finalAnswers,
@@ -289,15 +291,20 @@ const PsychometricTest = () => {
     }
   };
 
-  if (!quizResults) {
+  if (!quizResults && !fieldQuizResults) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="card text-center">
-          <h2 className="text-xl font-semibold mb-4">Access Denied</h2>
-          <p className="text-gray-600 mb-4">Please complete the career quiz first.</p>
-          <button onClick={() => navigate('/quiz')} className="btn-primary">
-            Take Career Quiz
-          </button>
+          <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Access Denied</h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">Please complete a career quiz first.</p>
+          <div className="flex justify-center space-x-4">
+            <button onClick={() => navigate('/quiz')} className="btn-primary">
+              Stream Selection Quiz
+            </button>
+            <button onClick={() => navigate('/field-quiz')} className="btn-secondary">
+              Field Selection Quiz
+            </button>
+          </div>
         </div>
       </div>
     );

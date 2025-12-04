@@ -17,7 +17,7 @@ const questionSchema = new mongoose.Schema({
   }],
   stream: {
     type: String,
-    enum: ['science', 'commerce', 'arts', 'diploma'],
+    enum: ['science', 'commerce', 'arts', 'diploma', 'engineering', 'medical', 'business', 'law', 'design'],
     required: true
   },
   difficulty: {

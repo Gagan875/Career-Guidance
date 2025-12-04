@@ -7,6 +7,7 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "seed-questions": "node seedQuestions.js",
+    "seed-field-questions": "node seedFieldQuestions.js",
     "seed-colleges": "node seedColleges.js",
     "seed-courses": "node seedCourses.js",
     "seed-all": "npm run seed-questions && npm run seed-colleges && npm run seed-courses",

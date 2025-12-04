@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import QuizSelectionModal from '../components/QuizSelectionModal';
 import axios from 'axios';
 
 const Dashboard = () => {
@@ -8,6 +9,7 @@ const Dashboard = () => {
   const [recommendations, setRecommendations] = useState([]);
   const [recentQuizzes, setRecentQuizzes] = useState([]);
   const [savedColleges, setSavedColleges] = useState([]);
+  const [isQuizModalOpen, setIsQuizModalOpen] = useState(false);
 
   useEffect(() => {
     fetchUserData();
@@ -30,6 +32,9 @@ const Dashboard = () => {
     }
   };
 
+  const openQuizModal = () => setIsQuizModalOpen(true);
+  const closeQuizModal = () => setIsQuizModalOpen(false);
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="mb-8">
@@ -47,7 +52,10 @@ const Dashboard = () => {
           <div className="card mb-8">
             <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Quick Actions</h2>
             <div className="grid md:grid-cols-2 gap-4">
-              <Link to="/quiz" className="p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900 transition-colors">
+              <button 
+                onClick={openQuizModal}
+                className="p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900 transition-colors"
+              >
                 <div className="text-center">
                   <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mx-auto mb-3">
                     <svg className="w-6 h-6 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -57,7 +65,7 @@ const Dashboard = () => {
                   <h3 className="font-medium text-gray-900 dark:text-white">Take Career Quiz</h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Discover your ideal career path</p>
                 </div>
-              </Link>
+              </button>
 
               <Link to="/colleges" className="p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900 transition-colors">
                 <div className="text-center">
@@ -143,9 +151,12 @@ const Dashboard = () => {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm">Career Assessment</span>
-                <Link to="/quiz" className="text-sm text-primary-600 hover:text-primary-700">
+                <button 
+                  onClick={openQuizModal}
+                  className="text-sm text-primary-600 hover:text-primary-700"
+                >
                   Take Quiz →
-                </Link>
+                </button>
               </div>
             </div>
           </div>
@@ -174,6 +185,9 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Quiz Selection Modal */}
+      <QuizSelectionModal isOpen={isQuizModalOpen} onClose={closeQuizModal} />
     </div>
   );
 };

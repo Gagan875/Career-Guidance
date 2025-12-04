@@ -8,6 +8,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Quiz from './pages/Quiz';
+import FieldQuiz from './pages/FieldQuiz';
 import PsychometricTest from './pages/PsychometricTest';
 import CareerResults from './pages/CareerResults';
 import Colleges from './pages/Colleges';
@@ -32,6 +33,7 @@ function App() {
                 </ProtectedRoute>
               } />
               <Route path="/quiz" element={<Quiz />} />
+              <Route path="/field-quiz" element={<FieldQuiz />} />
               <Route path="/psychometric-test" element={<PsychometricTest />} />
               <Route path="/career-results" element={<CareerResults />} />
               <Route path="/colleges" element={<Colleges />} />

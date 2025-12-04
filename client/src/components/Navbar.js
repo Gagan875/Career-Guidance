@@ -1,16 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import ThemeToggle from './ThemeToggle';
+import QuizSelectionModal from './QuizSelectionModal';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [isQuizModalOpen, setIsQuizModalOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate('/');
   };
+
+  const openQuizModal = () => setIsQuizModalOpen(true);
+  const closeQuizModal = () => setIsQuizModalOpen(false);
 
   return (
     <nav className="bg-white dark:bg-gray-800 shadow-lg transition-colors duration-200">
@@ -24,9 +29,12 @@ const Navbar = () => {
           </Link>
 
           <div className="hidden md:flex items-center space-x-8">
-            <Link to="/quiz" className="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+            <button 
+              onClick={openQuizModal}
+              className="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+            >
               Take Quiz
-            </Link>
+            </button>
             <Link to="/colleges" className="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
               Colleges
             </Link>
@@ -74,6 +82,9 @@ const Navbar = () => {
           </div>
         </div>
       </div>
+
+      {/* Quiz Selection Modal */}
+      <QuizSelectionModal isOpen={isQuizModalOpen} onClose={closeQuizModal} />
     </nav>
   );
 };
