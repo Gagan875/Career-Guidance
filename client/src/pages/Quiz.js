@@ -12,8 +12,29 @@ const Quiz = () => {
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [timeRemaining, setTimeRemaining] = useState(600); // 10 minutes = 600 seconds
+  const [timerActive, setTimerActive] = useState(false);
   const { user, token } = useAuth();
   const navigate = useNavigate();
+
+  // Timer effect - starts when questions are loaded
+  useEffect(() => {
+    if (timerActive && timeRemaining > 0 && !showResults) {
+      const timer = setInterval(() => {
+        setTimeRemaining((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            // Auto-submit when time runs out
+            handleTimeUp();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [timerActive, timeRemaining, showResults]);
 
   // Fetch random questions from database (5 from each stream)
   useEffect(() => {
@@ -103,6 +124,7 @@ const Quiz = () => {
       }
 
       setLoading(false);
+      setTimerActive(true); // Start the timer when questions are loaded
     } catch (error) {
       console.error('Error fetching questions:', error);
       setError('Failed to load quiz questions. Please try again.');
@@ -131,8 +153,23 @@ const Quiz = () => {
     }, 500);
   };
 
+  const handleTimeUp = () => {
+    console.log('Time is up! Auto-submitting quiz...');
+    setTimerActive(false);
+    
+    // Submit with current answers (even if incomplete)
+    if (answers.length > 0) {
+      submitQuiz(answers);
+    } else {
+      // If no answers at all, show error
+      setError('Time is up! Please try again.');
+      setShowResults(true);
+    }
+  };
+
   const submitQuiz = async (finalAnswers) => {
     try {
+      setTimerActive(false); // Stop the timer when submitting
       console.log('Submitting quiz with answers:', finalAnswers);
       console.log('User token available:', !!token);
       console.log('User info:', user);
@@ -299,6 +336,8 @@ const Quiz = () => {
     setSelectedOption(null);
     setShowResults(false);
     setResults(null);
+    setTimeRemaining(600); // Reset timer to 10 minutes
+    setTimerActive(false); // Will be reactivated when questions load
     fetchQuestions(); // Fetch new random questions
   };
 
@@ -378,12 +417,12 @@ const Quiz = () => {
                 </svg>
                 20 Questions
               </span>
-              <span className="flex items-center mr-4">
+              {/* <span className="flex items-center mr-4">
                 <svg className="w-4 h-4 mr-1 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
                 </svg>
                 5-7 Minutes
-              </span>
+              </span> */}
               <span className="flex items-center">
                 <svg className="w-4 h-4 mr-1 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -444,25 +483,42 @@ const Quiz = () => {
 
   const currentQ = questions[currentQuestion];
 
+  // Format time remaining as MM:SS
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Determine timer color based on time remaining
+  const getTimerColor = () => {
+    if (timeRemaining > 300) return 'text-green-600 dark:text-green-400'; // > 5 min
+    if (timeRemaining > 120) return 'text-yellow-600 dark:text-yellow-400'; // > 2 min
+    return 'text-red-600 dark:text-red-400'; // < 2 min
+  };
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="card">
         <div className="mb-6">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold">Career Assessment Quiz</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Career Assessment Quiz</h1>
             <div className="text-right">
-              <span className="text-sm text-gray-600">
+              <div className={`text-2xl font-bold mb-1 ${getTimerColor()}`}>
+                {formatTime(timeRemaining)}
+              </div>
+              <span className="text-sm text-gray-600 dark:text-gray-400">
                 Question {currentQuestion + 1} of {questions.length}
               </span>
-              <div className="text-xs text-gray-500 capitalize">
+              <div className="text-xs text-gray-500 dark:text-gray-500 capitalize">
                 {currentQ.stream} Stream • {currentQ.difficulty} • {currentQ.category}
               </div>
             </div>
           </div>
 
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
             <div
-              className="bg-primary-600 h-2 rounded-full transition-all duration-300"
+              className="bg-primary-600 dark:bg-primary-500 h-2 rounded-full transition-all duration-300"
               style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
             ></div>
           </div>

@@ -11,8 +11,29 @@ const FieldQuiz = () => {
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [timeRemaining, setTimeRemaining] = useState(1800); // 30 minutes = 1800 seconds
+  const [timerActive, setTimerActive] = useState(false);
   const { user, token } = useAuth();
   const navigate = useNavigate();
+
+  // Timer effect - starts when questions are loaded
+  useEffect(() => {
+    if (timerActive && timeRemaining > 0 && !showResults) {
+      const timer = setInterval(() => {
+        setTimeRemaining((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            // Auto-submit when time runs out
+            handleTimeUp();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [timerActive, timeRemaining, showResults]);
 
   // Fetch random questions from database (5 from each of 15 fields = 75 total)
   useEffect(() => {
@@ -22,6 +43,7 @@ const FieldQuiz = () => {
   const fetchQuestions = async () => {
     try {
       setLoading(true);
+      setError(null); // Clear any previous errors
 
       let url = 'http://localhost:5000/api/field-quiz/random';
 
@@ -33,7 +55,8 @@ const FieldQuiz = () => {
         console.log('Parsed usedFieldQuestions:', usedQuestions);
 
         if (usedQuestions.length > 0) {
-          const recentQuestions = usedQuestions.slice(-5400); // Keep last 72 quizzes * 75 questions
+          // Keep only last 225 questions (3 quizzes * 75 questions) to avoid URL length issues
+          const recentQuestions = usedQuestions.slice(-225);
           localStorage.setItem('usedFieldQuestions', JSON.stringify(recentQuestions));
 
           const excludeParam = encodeURIComponent(JSON.stringify(recentQuestions));
@@ -45,13 +68,30 @@ const FieldQuiz = () => {
       }
 
       console.log('Fetching from URL:', url);
-      const response = await fetch(url);
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
 
       if (!response.ok) {
-        throw new Error('Failed to fetch field questions');
+        const errorText = await response.text();
+        console.error('Server error response:', errorText);
+        throw new Error(`Server returned ${response.status}: ${errorText}`);
       }
 
       const data = await response.json();
+      console.log('Data received:', data);
+      
+      if (!data.questions || data.questions.length === 0) {
+        throw new Error('No questions received from server');
+      }
+      
       setQuestions(data.questions);
 
       console.log('Field quiz data received:', {
@@ -65,10 +105,26 @@ const FieldQuiz = () => {
       }
 
       setLoading(false);
+      setTimerActive(true); // Start the timer when questions are loaded
     } catch (error) {
       console.error('Error fetching field questions:', error);
-      setError('Failed to load quiz questions. Please try again.');
+      console.error('Error details:', error.message);
+      setError(`Failed to load quiz questions: ${error.message}. Please try again.`);
       setLoading(false);
+    }
+  };
+
+  const handleTimeUp = () => {
+    console.log('Time is up! Auto-submitting field quiz...');
+    setTimerActive(false);
+    
+    // Submit with current answers (even if incomplete)
+    if (answers.length > 0) {
+      submitQuiz(answers);
+    } else {
+      // If no answers at all, show error
+      setError('Time is up! Please try again.');
+      setShowResults(true);
     }
   };
 
@@ -94,6 +150,7 @@ const FieldQuiz = () => {
 
   const submitQuiz = async (finalAnswers) => {
     try {
+      setTimerActive(false); // Stop the timer when submitting
       console.log('Submitting field quiz with answers:', finalAnswers);
       console.log('User token available:', !!token);
 
@@ -344,14 +401,14 @@ const FieldQuiz = () => {
                 <svg className="w-4 h-4 mr-1 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
-                20 Questions
+                75 Questions
               </span>
-              <span className="flex items-center mr-4">
+              {/* <span className="flex items-center mr-4">
                 <svg className="w-4 h-4 mr-1 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
                 </svg>
                 5-7 Minutes
-              </span>
+              </span> */}
               <span className="flex items-center">
                 <svg className="w-4 h-4 mr-1 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -412,6 +469,20 @@ const FieldQuiz = () => {
 
   const currentQ = questions[currentQuestion];
 
+  // Format time remaining as MM:SS
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Determine timer color based on time remaining
+  const getTimerColor = () => {
+    if (timeRemaining > 900) return 'text-green-600 dark:text-green-400'; // > 15 min
+    if (timeRemaining > 300) return 'text-yellow-600 dark:text-yellow-400'; // > 5 min
+    return 'text-red-600 dark:text-red-400'; // < 5 min
+  };
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="card">
@@ -419,6 +490,9 @@ const FieldQuiz = () => {
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Field Selection Quiz</h1>
             <div className="text-right">
+              <div className={`text-2xl font-bold mb-1 ${getTimerColor()}`}>
+                {formatTime(timeRemaining)}
+              </div>
               <span className="text-sm text-gray-600 dark:text-gray-400">
                 Question {currentQuestion + 1} of {questions.length}
               </span>
@@ -430,7 +504,7 @@ const FieldQuiz = () => {
 
           <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
             <div
-              className="bg-primary-600 h-2 rounded-full transition-all duration-300"
+              className="bg-primary-600 dark:bg-primary-500 h-2 rounded-full transition-all duration-300"
               style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
             ></div>
           </div>

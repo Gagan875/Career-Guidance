@@ -6,6 +6,8 @@ const PsychometricTest = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
+  const [timeRemaining, setTimeRemaining] = useState(600); // 10 minutes = 600 seconds
+  const [timerActive, setTimerActive] = useState(true); // Start timer immediately
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -156,6 +158,39 @@ const PsychometricTest = () => {
     { value: 5, text: "Strongly Agree" }
   ];
 
+  // Timer effect - starts immediately when component loads
+  React.useEffect(() => {
+    if (timerActive && timeRemaining > 0) {
+      const timer = setInterval(() => {
+        setTimeRemaining((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            // Auto-submit when time runs out
+            handleTimeUp();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [timerActive, timeRemaining]);
+
+  const handleTimeUp = () => {
+    console.log('Time is up! Auto-submitting psychometric test...');
+    setTimerActive(false);
+    
+    // Submit with current answers (even if incomplete)
+    if (answers.length > 0) {
+      calculateResults(answers);
+    } else {
+      // If no answers at all, redirect back
+      alert('Time is up! Please try again.');
+      navigate(-1);
+    }
+  };
+
   const handleAnswerSelect = (value) => {
     setSelectedOption(value);
 
@@ -179,6 +214,8 @@ const PsychometricTest = () => {
   };
 
   const calculateResults = (finalAnswers) => {
+    setTimerActive(false); // Stop the timer when submitting
+    
     // Calculate trait scores
     const traitScores = {
       openness: 0,
@@ -312,32 +349,49 @@ const PsychometricTest = () => {
 
   const currentQ = questions[currentQuestion];
 
+  // Format time remaining as MM:SS
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Determine timer color based on time remaining
+  const getTimerColor = () => {
+    if (timeRemaining > 300) return 'text-green-600 dark:text-green-400'; // > 5 min
+    if (timeRemaining > 120) return 'text-yellow-600 dark:text-yellow-400'; // > 2 min
+    return 'text-red-600 dark:text-red-400'; // < 2 min
+  };
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="card">
         <div className="mb-6">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold">Psychometric Assessment</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Psychometric Assessment</h1>
             <div className="text-right">
-              <span className="text-sm text-gray-600">
+              <div className={`text-2xl font-bold mb-1 ${getTimerColor()}`}>
+                {formatTime(timeRemaining)}
+              </div>
+              <span className="text-sm text-gray-600 dark:text-gray-400">
                 Question {currentQuestion + 1} of {questions.length}
               </span>
-              <div className="text-xs text-gray-500">
+              <div className="text-xs text-gray-500 dark:text-gray-500">
                 Personality & Career Traits
               </div>
             </div>
           </div>
 
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
             <div
-              className="bg-primary-600 h-2 rounded-full transition-all duration-300"
+              className="bg-primary-600 dark:bg-primary-500 h-2 rounded-full transition-all duration-300"
               style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
             ></div>
           </div>
         </div>
 
         <div className="mb-8">
-          <h2 className="text-xl font-semibold mb-6">
+          <h2 className="text-xl font-semibold mb-6 text-gray-900 dark:text-white">
             {currentQ.question}
           </h2>
 
@@ -352,10 +406,10 @@ const PsychometricTest = () => {
                   onClick={() => handleAnswerSelect(option.value)}
                   disabled={selectedOption !== null}
                   className={`w-full p-4 text-left border-2 rounded-lg transition-all duration-300 ${isSelected
-                    ? 'border-primary-600 bg-primary-100 shadow-md transform scale-[1.02]'
+                    ? 'border-primary-600 bg-primary-100 dark:bg-primary-900 shadow-md transform scale-[1.02]'
                     : previouslyAnswered
-                      ? 'border-primary-400 bg-primary-50'
-                      : 'border-gray-200 hover:border-primary-500 hover:bg-primary-50'
+                      ? 'border-primary-400 bg-primary-50 dark:bg-primary-800'
+                      : 'border-gray-200 dark:border-gray-700 hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900'
                     } ${selectedOption !== null ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                 >
                   <div className="flex items-center">
@@ -363,11 +417,11 @@ const PsychometricTest = () => {
                       ? 'bg-primary-600 text-white'
                       : previouslyAnswered
                         ? 'bg-primary-400 text-white'
-                        : 'bg-gray-100 text-gray-700'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
                       }`}>
                       {option.value}
                     </span>
-                    <span className={isSelected ? 'font-medium text-primary-800' : ''}>
+                    <span className={isSelected ? 'font-medium text-primary-800 dark:text-primary-200' : 'text-gray-900 dark:text-gray-100'}>
                       {option.text}
                     </span>
                   </div>
@@ -386,7 +440,7 @@ const PsychometricTest = () => {
             Previous Question
           </button>
 
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-gray-500 dark:text-gray-400">
             Personality Assessment • Career Matching
           </div>
         </div>
