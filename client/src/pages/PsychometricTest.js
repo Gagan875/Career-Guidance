@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import '../styles/animations.css';
 
 const PsychometricTest = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -330,17 +331,30 @@ const PsychometricTest = () => {
 
   if (!quizResults && !fieldQuizResults) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="card text-center">
-          <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Access Denied</h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">Please complete a career quiz first.</p>
-          <div className="flex justify-center space-x-4">
-            <button onClick={() => navigate('/quiz')} className="btn-primary">
-              Stream Selection Quiz
-            </button>
-            <button onClick={() => navigate('/field-quiz')} className="btn-secondary">
-              Field Selection Quiz
-            </button>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900 py-8">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="glass dark:glass-dark rounded-2xl p-8 text-center animate-fadeIn shadow-2xl">
+            <div className="w-20 h-20 bg-gradient-to-r from-red-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+            </div>
+            <h2 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">Access Denied</h2>
+            <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">Please complete a career quiz first to access the psychometric assessment.</p>
+            <div className="flex justify-center space-x-4 flex-wrap gap-4">
+              <button 
+                onClick={() => navigate('/quiz')} 
+                className="btn-animate px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+              >
+                Stream Selection Quiz
+              </button>
+              <button 
+                onClick={() => navigate('/field-quiz')} 
+                className="btn-animate px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+              >
+                Field Selection Quiz
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -364,84 +378,120 @@ const PsychometricTest = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <div className="card">
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Psychometric Assessment</h1>
-            <div className="text-right">
-              <div className={`text-2xl font-bold mb-1 ${getTimerColor()}`}>
-                {formatTime(timeRemaining)}
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-indigo-900 dark:to-purple-900 py-8">
+      <div className="max-w-4xl mx-auto px-4">
+        <div className="glass dark:glass-dark rounded-2xl p-8 shadow-2xl animate-fadeIn">
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center">
+                <div className="w-16 h-16 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center mr-4">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  </svg>
+                </div>
+                <div>
+                  <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Psychometric Assessment</h1>
+                  <p className="text-lg text-gray-600 dark:text-gray-300">Discover your personality traits and career preferences</p>
+                </div>
               </div>
-              <span className="text-sm text-gray-600 dark:text-gray-400">
-                Question {currentQuestion + 1} of {questions.length}
-              </span>
-              <div className="text-xs text-gray-500 dark:text-gray-500">
-                Personality & Career Traits
+              <div className="text-right">
+                <div className={`text-4xl font-bold mb-2 ${getTimerColor()} animate-pulse-custom`}>
+                  {formatTime(timeRemaining)}
+                </div>
+                <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                  Question {currentQuestion + 1} of {questions.length}
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-500">
+                  Personality & Career Traits
+                </div>
               </div>
+            </div>
+
+            <div className="relative w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-2 overflow-hidden">
+              <div
+                className="absolute top-0 left-0 h-full bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full transition-all duration-500 ease-out"
+                style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
+              ></div>
+              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"></div>
+            </div>
+            <div className="text-center text-sm text-gray-600 dark:text-gray-400">
+              {Math.round(((currentQuestion + 1) / questions.length) * 100)}% Complete
             </div>
           </div>
 
-          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-            <div
-              className="bg-primary-600 dark:bg-primary-500 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
-            ></div>
-          </div>
-        </div>
+          <div className="mb-10">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 p-8 rounded-2xl border border-blue-200 dark:border-blue-700 mb-8">
+              <h2 className="text-2xl font-semibold mb-6 text-gray-900 dark:text-white leading-relaxed">
+                {currentQ.question}
+              </h2>
+            </div>
 
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold mb-6 text-gray-900 dark:text-white">
-            {currentQ.question}
-          </h2>
+            <div className="space-y-4">
+              {options.map((option, index) => {
+                const isSelected = selectedOption === option.value;
+                const previouslyAnswered = answers[currentQuestion]?.value === option.value;
 
-          <div className="space-y-3">
-            {options.map((option, index) => {
-              const isSelected = selectedOption === option.value;
-              const previouslyAnswered = answers[currentQuestion]?.value === option.value;
-
-              return (
-                <button
-                  key={option.value}
-                  onClick={() => handleAnswerSelect(option.value)}
-                  disabled={selectedOption !== null}
-                  className={`w-full p-4 text-left border-2 rounded-lg transition-all duration-300 ${isSelected
-                    ? 'border-primary-600 bg-primary-100 dark:bg-primary-900 shadow-md transform scale-[1.02]'
-                    : previouslyAnswered
-                      ? 'border-primary-400 bg-primary-50 dark:bg-primary-800'
-                      : 'border-gray-200 dark:border-gray-700 hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900'
+                return (
+                  <button
+                    key={option.value}
+                    onClick={() => handleAnswerSelect(option.value)}
+                    disabled={selectedOption !== null}
+                    className={`w-full p-6 text-left border-2 rounded-2xl transition-all duration-300 hover-lift ${
+                      isSelected
+                        ? 'border-indigo-600 bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-900 dark:to-purple-900 shadow-xl transform scale-[1.02] animate-glow'
+                        : previouslyAnswered
+                        ? 'border-indigo-400 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-800 dark:to-purple-800'
+                        : 'border-gray-200 dark:border-gray-700 hover:border-indigo-500 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 dark:hover:from-indigo-900 dark:hover:to-purple-900'
                     } ${selectedOption !== null ? 'cursor-not-allowed' : 'cursor-pointer'}`}
-                >
-                  <div className="flex items-center">
-                    <span className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium mr-3 transition-colors ${isSelected
-                      ? 'bg-primary-600 text-white'
-                      : previouslyAnswered
-                        ? 'bg-primary-400 text-white'
-                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                  >
+                    <div className="flex items-center">
+                      <span className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold mr-4 transition-all duration-300 ${
+                        isSelected
+                          ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg'
+                          : previouslyAnswered
+                          ? 'bg-gradient-to-r from-indigo-400 to-purple-400 text-white'
+                          : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
                       }`}>
-                      {option.value}
-                    </span>
-                    <span className={isSelected ? 'font-medium text-primary-800 dark:text-primary-200' : 'text-gray-900 dark:text-gray-100'}>
-                      {option.text}
-                    </span>
-                  </div>
-                </button>
-              );
-            })}
+                        {option.value}
+                      </span>
+                      <span className={`text-lg ${
+                        isSelected 
+                          ? 'font-semibold text-indigo-800 dark:text-indigo-200' 
+                          : 'text-gray-900 dark:text-gray-100'
+                      }`}>
+                        {option.text}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </div>
 
-        <div className="flex justify-between">
-          <button
-            onClick={goToPrevious}
-            disabled={currentQuestion === 0}
-            className={`btn-secondary ${currentQuestion === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
-          >
-            Previous Question
-          </button>
+          <div className="flex justify-between items-center">
+            <button
+              onClick={goToPrevious}
+              disabled={currentQuestion === 0}
+              className={`btn-animate px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-semibold rounded-xl shadow-lg transition-all duration-300 ${
+                currentQuestion === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-xl transform hover:scale-105'
+              }`}
+            >
+              <svg className="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Previous Question
+            </button>
 
-          <div className="text-sm text-gray-500 dark:text-gray-400">
-            Personality Assessment • Career Matching
+            <div className="text-center">
+              <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                Personality Assessment
+              </div>
+              <div className="text-xs text-gray-400 dark:text-gray-500">
+                Career Matching Algorithm
+              </div>
+            </div>
+
+            <div className="w-32"></div> {/* Spacer for balance */}
           </div>
         </div>
       </div>

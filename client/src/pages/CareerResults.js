@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import '../styles/animations.css';
 
 const CareerResults = () => {
   const navigate = useNavigate();
@@ -12,17 +13,30 @@ const CareerResults = () => {
 
   if ((!quizResults && !fieldQuizResults) || !psychometricResults) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="card text-center">
-          <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Assessment Required</h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">Please complete both assessments to view your results.</p>
-          <div className="flex justify-center space-x-4">
-            <button onClick={() => navigate('/quiz')} className="btn-primary">
-              Stream Quiz
-            </button>
-            <button onClick={() => navigate('/field-quiz')} className="btn-secondary">
-              Field Quiz
-            </button>
+      <div className="min-h-screen bg-gradient-to-br from-red-50 via-pink-50 to-purple-50 dark:from-gray-900 dark:via-red-900 dark:to-pink-900 py-8">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="glass dark:glass-dark rounded-2xl p-8 text-center animate-fadeIn shadow-2xl">
+            <div className="w-20 h-20 bg-gradient-to-r from-red-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+              </svg>
+            </div>
+            <h2 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">Assessment Required</h2>
+            <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">Please complete both assessments to view your comprehensive career analysis.</p>
+            <div className="flex justify-center space-x-4 flex-wrap gap-4">
+              <button 
+                onClick={() => navigate('/quiz')} 
+                className="btn-animate px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+              >
+                Stream Quiz
+              </button>
+              <button 
+                onClick={() => navigate('/field-quiz')} 
+                className="btn-animate px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+              >
+                Field Quiz
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -403,225 +417,313 @@ const CareerResults = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="card mb-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="w-20 h-20 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-10 h-10 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-            </svg>
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 dark:from-gray-900 dark:via-emerald-900 dark:to-teal-900 py-8">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="glass dark:glass-dark rounded-2xl p-8 mb-8 shadow-2xl animate-fadeIn">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <div className="w-24 h-24 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-6 animate-float">
+              <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+              </svg>
+            </div>
+            <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-4 bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+              Your Complete Career Analysis
+            </h1>
+            <p className="text-xl text-gray-600 dark:text-gray-300">Based on your academic aptitude and personality assessment</p>
+            <div className="mt-4 inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-100 to-teal-100 dark:from-emerald-900 dark:to-teal-900 rounded-full">
+              <svg className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              <span className="text-emerald-700 dark:text-emerald-300 font-semibold">AI-Powered Career Matching</span>
+            </div>
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">Your Complete Career Analysis</h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400">Based on your academic aptitude and personality assessment</p>
-        </div>
 
-        {/* Career Recommendations */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">Top Career Matches</h2>
-          <div className="grid gap-6">
-            {careerRecommendations.map((career, index) => (
-              <div key={index} className="bg-gradient-to-r from-primary-50 to-primary-100 dark:from-primary-900 dark:to-primary-800 p-6 rounded-xl border border-primary-200 dark:border-primary-700">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center">
-                    <div className="w-12 h-12 bg-primary-600 dark:bg-primary-500 text-white rounded-full flex items-center justify-center text-xl font-bold mr-4">
-                      {index + 1}
+          {/* Career Recommendations */}
+          <div className="mb-16">
+            <h2 className="text-3xl font-bold mb-8 text-center text-gray-900 dark:text-white">
+              🎯 Top Career Matches
+            </h2>
+            <div className="grid gap-8">
+              {careerRecommendations.map((career, index) => (
+                <div key={index} className="card-hover bg-gradient-to-r from-white to-gray-50 dark:from-gray-800 dark:to-gray-700 p-8 rounded-2xl border-2 border-gray-200 dark:border-gray-600 shadow-lg animate-slideIn" style={{animationDelay: `${index * 0.1}s`}}>
+                  <div className="flex items-start justify-between mb-6">
+                    <div className="flex items-center">
+                      <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-bold mr-6 shadow-lg ${
+                        index === 0 ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white' :
+                        index === 1 ? 'bg-gradient-to-r from-gray-400 to-gray-600 text-white' :
+                        index === 2 ? 'bg-gradient-to-r from-amber-600 to-yellow-700 text-white' :
+                        'bg-gradient-to-r from-blue-500 to-indigo-600 text-white'
+                      }`}>
+                        {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1}
+                      </div>
+                      <div>
+                        <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-1">{career.career}</h3>
+                        <p className="text-lg text-blue-600 dark:text-blue-400 font-semibold">{career.category}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-4xl font-bold text-emerald-600 dark:text-emerald-400 mb-1">
+                        {Math.round(career.match)}%
+                      </div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">Match Score</div>
+                      <div className="w-20 bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-2">
+                        <div
+                          className="bg-gradient-to-r from-emerald-500 to-teal-500 h-2 rounded-full transition-all duration-1000"
+                          style={{ width: `${career.match}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <p className="text-lg text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">{career.description}</p>
+                  
+                  <div className="grid md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                      <h4 className="font-bold text-gray-800 dark:text-gray-200 mb-3 flex items-center">
+                        <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                        </svg>
+                        Key Skills:
+                      </h4>
+                      <div className="flex flex-wrap gap-2">
+                        {career.skills.map((skill, idx) => (
+                          <span key={idx} className="px-4 py-2 bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-blue-900 dark:to-indigo-900 text-blue-800 dark:text-blue-200 rounded-full text-sm font-medium shadow-sm">
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold text-primary-800 dark:text-primary-100">{career.career}</h3>
-                      <p className="text-primary-600 dark:text-primary-300 font-medium">{career.category}</p>
+                      <h4 className="font-bold text-gray-800 dark:text-gray-200 mb-3 flex items-center">
+                        <svg className="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                        Education:
+                      </h4>
+                      <p className="text-gray-700 dark:text-gray-300">{career.education}</p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-3xl font-bold text-primary-600 dark:text-primary-300">{Math.round(career.match)}%</div>
-                    <div className="text-sm text-primary-500 dark:text-primary-400">Match</div>
-                  </div>
-                </div>
-                
-                <p className="text-gray-700 dark:text-gray-300 mb-4">{career.description}</p>
-                
-                <div className="grid md:grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">Key Skills:</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {career.skills.map((skill, idx) => (
-                        <span key={idx} className="px-3 py-1 bg-primary-200 dark:bg-primary-700 text-primary-800 dark:text-primary-200 rounded-full text-sm">
-                          {skill}
-                        </span>
-                      ))}
+                  
+                  <div className="grid md:grid-cols-2 gap-6 p-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 rounded-xl">
+                    <div className="flex items-center">
+                      <svg className="w-6 h-6 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                      </svg>
+                      <div>
+                        <span className="font-semibold text-gray-800 dark:text-gray-200">Salary Range:</span>
+                        <div className="text-green-700 dark:text-green-300 font-bold">{career.salary}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center">
+                      <svg className="w-6 h-6 text-purple-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                      </svg>
+                      <div>
+                        <span className="font-semibold text-gray-800 dark:text-gray-200">Job Outlook:</span>
+                        <div className="text-purple-700 dark:text-purple-300 font-medium">{career.growth}</div>
+                      </div>
                     </div>
                   </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">Education:</h4>
-                    <p className="text-gray-700 dark:text-gray-300 text-sm">{career.education}</p>
-                  </div>
-                </div>
-                
-                <div className="grid md:grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="font-semibold text-gray-800 dark:text-gray-200">Salary Range:</span>
-                    <span className="text-gray-700 dark:text-gray-300 ml-2">{career.salary}</span>
-                  </div>
-                  <div>
-                    <span className="font-semibold text-gray-800 dark:text-gray-200">Job Outlook:</span>
-                    <span className="text-gray-700 dark:text-gray-300 ml-2">{career.growth}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Analysis Summary */}
-        <div className="grid md:grid-cols-2 gap-8 mb-8">
-          {/* Personality Strengths */}
-          <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg">
-            <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">Your Top Strengths</h3>
-            <div className="space-y-4">
-              {topStrengths.map(({ trait, score, description }) => (
-                <div key={trait}>
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="font-medium text-gray-800 dark:text-gray-200">{trait}</span>
-                    <span className="text-sm font-bold text-primary-600 dark:text-primary-400">{score}%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-1">
-                    <div
-                      className="bg-primary-600 dark:bg-primary-500 h-2 rounded-full"
-                      style={{ width: `${score}%` }}
-                    ></div>
-                  </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">{description}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Academic Aptitude - Show either stream or field results */}
-          {isFieldQuiz ? (
-            // Show all 15 fields in a full-width section for field quiz
-            <div className="col-span-2 bg-gray-50 dark:bg-gray-800 p-6 rounded-lg">
-              <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">Field Selection Analysis</h3>
-              <div className="grid md:grid-cols-2 gap-4">
-                {Object.entries(fieldQuizResults.fieldPercentages)
-                  .sort((a, b) => b[1] - a[1])
-                  .map(([field, percentage]) => {
-                    const getFieldDisplayName = (field) => {
-                      const fieldNames = {
-                        'engineering': 'Engineering',
-                        'medical': 'Medical',
-                        'computer-science': 'Computer Science',
-                        'data-science': 'Data Science',
-                        'management': 'Management',
-                        'law': 'Law',
-                        'design': 'Design',
-                        'architecture': 'Architecture',
-                        'agriculture': 'Agriculture',
-                        'pharmacy': 'Pharmacy',
-                        'biotechnology': 'Biotechnology',
-                        'psychology': 'Psychology',
-                        'mass-communication': 'Mass Communication',
-                        'hospitality': 'Hospitality',
-                        'aviation': 'Aviation'
-                      };
-                      return fieldNames[field] || field;
-                    };
-
-                    const getPerformanceColor = (percentage) => {
-                      if (percentage >= 80) return 'text-green-600 dark:text-green-400';
-                      if (percentage >= 60) return 'text-blue-600 dark:text-blue-400';
-                      if (percentage >= 40) return 'text-yellow-600 dark:text-yellow-400';
-                      return 'text-red-600 dark:text-red-400';
-                    };
-
-                    const getBarColor = (percentage) => {
-                      if (percentage >= 80) return 'bg-green-600 dark:bg-green-500';
-                      if (percentage >= 60) return 'bg-blue-600 dark:bg-blue-500';
-                      if (percentage >= 40) return 'bg-yellow-600 dark:bg-yellow-500';
-                      return 'bg-red-600 dark:bg-red-500';
-                    };
-
-                    return (
-                      <div key={field}>
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="font-medium text-gray-800 dark:text-gray-200">
-                            {getFieldDisplayName(field)}
-                          </span>
-                          <span className={`text-sm font-bold ${getPerformanceColor(percentage)}`}>
-                            {percentage}%
-                          </span>
-                        </div>
-                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                          <div
-                            className={`${getBarColor(percentage)} h-2 rounded-full transition-all duration-300`}
-                            style={{ width: `${percentage}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                    );
-                  })}
-              </div>
-              
-              {quizData.accuracy && (
-                <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900 rounded-lg">
-                  <div className="text-sm">
-                    <span className="font-semibold text-blue-800 dark:text-blue-200">Quiz Performance:</span>
-                    <span className="text-blue-700 dark:text-blue-300 ml-1">
-                      {quizData.correctAnswers}/{quizData.totalQuestions} correct ({quizData.accuracy}%)
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
-          ) : (
-            // Show stream results for stream quiz
-            <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg">
-              <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">Academic Stream Analysis</h3>
-              <div className="space-y-4">
-                {Object.entries(quizResults.streamPercentages).map(([stream, percentage]) => (
-                  <div key={stream}>
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="font-medium text-gray-800 dark:text-gray-200 capitalize">{stream}</span>
-                      <span className="text-sm font-bold text-primary-600 dark:text-primary-400">{percentage}%</span>
+          {/* Analysis Summary */}
+          <div className="grid md:grid-cols-2 gap-8 mb-12">
+            {/* Personality Strengths */}
+            <div className="glass dark:glass-dark p-8 rounded-2xl shadow-lg animate-scaleIn">
+              <h3 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white flex items-center">
+                <svg className="w-8 h-8 mr-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                </svg>
+                Your Top Strengths
+              </h3>
+              <div className="space-y-6">
+                {topStrengths.map(({ trait, score, description }, index) => (
+                  <div key={trait} className="animate-slideIn" style={{animationDelay: `${index * 0.1}s`}}>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-semibold text-gray-800 dark:text-gray-200 text-lg">{trait}</span>
+                      <span className="text-lg font-bold text-purple-600 dark:text-purple-400">{score}%</span>
                     </div>
-                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-2 overflow-hidden">
                       <div
-                        className="bg-primary-600 dark:bg-primary-500 h-2 rounded-full"
-                        style={{ width: `${percentage}%` }}
+                        className="bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full transition-all duration-1000 ease-out"
+                        style={{ width: `${score}%` }}
                       ></div>
                     </div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 italic">{description}</p>
                   </div>
                 ))}
               </div>
-              
-              {quizData.accuracy && (
-                <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900 rounded-lg">
-                  <div className="text-sm">
-                    <span className="font-semibold text-blue-800 dark:text-blue-200">Quiz Performance:</span>
-                    <span className="text-blue-700 dark:text-blue-300 ml-1">
-                      {quizData.correctAnswers}/{quizData.totalQuestions} correct ({quizData.accuracy}%)
-                    </span>
-                  </div>
+            </div>
+
+            {/* Academic Aptitude - Show either stream or field results */}
+            {isFieldQuiz ? (
+              // Show all 15 fields in a full-width section for field quiz
+              <div className="col-span-2 glass dark:glass-dark p-8 rounded-2xl shadow-lg animate-scaleIn">
+                <h3 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white flex items-center">
+                  <svg className="w-8 h-8 mr-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v6a2 2 0 002 2h2m0-8h2m-2 0V3m0 2v2m0 0h2m-2 0H9m4 0v2m0 0h2a2 2 0 002-2V7a2 2 0 00-2-2h-2m0 0V3" />
+                  </svg>
+                  Field Selection Analysis
+                </h3>
+                <div className="grid md:grid-cols-2 gap-6">
+                  {Object.entries(fieldQuizResults.fieldPercentages)
+                    .sort((a, b) => b[1] - a[1])
+                    .map(([field, percentage], index) => {
+                      const getFieldDisplayName = (field) => {
+                        const fieldNames = {
+                          'engineering': 'Engineering',
+                          'medical': 'Medical',
+                          'computer-science': 'Computer Science',
+                          'data-science': 'Data Science',
+                          'management': 'Management',
+                          'law': 'Law',
+                          'design': 'Design',
+                          'architecture': 'Architecture',
+                          'agriculture': 'Agriculture',
+                          'pharmacy': 'Pharmacy',
+                          'biotechnology': 'Biotechnology',
+                          'psychology': 'Psychology',
+                          'mass-communication': 'Mass Communication',
+                          'hospitality': 'Hospitality',
+                          'aviation': 'Aviation'
+                        };
+                        return fieldNames[field] || field;
+                      };
+
+                      const getPerformanceColor = (percentage) => {
+                        if (percentage >= 80) return 'text-green-600 dark:text-green-400';
+                        if (percentage >= 60) return 'text-blue-600 dark:text-blue-400';
+                        if (percentage >= 40) return 'text-yellow-600 dark:text-yellow-400';
+                        return 'text-red-600 dark:text-red-400';
+                      };
+
+                      const getBarColor = (percentage) => {
+                        if (percentage >= 80) return 'bg-gradient-to-r from-green-500 to-emerald-500';
+                        if (percentage >= 60) return 'bg-gradient-to-r from-blue-500 to-indigo-500';
+                        if (percentage >= 40) return 'bg-gradient-to-r from-yellow-500 to-orange-500';
+                        return 'bg-gradient-to-r from-red-500 to-pink-500';
+                      };
+
+                      return (
+                        <div key={field} className="animate-slideIn" style={{animationDelay: `${index * 0.05}s`}}>
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="font-semibold text-gray-800 dark:text-gray-200 text-lg">
+                              {getFieldDisplayName(field)}
+                            </span>
+                            <span className={`text-lg font-bold ${getPerformanceColor(percentage)}`}>
+                              {percentage}%
+                            </span>
+                          </div>
+                          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+                            <div
+                              className={`${getBarColor(percentage)} h-3 rounded-full transition-all duration-1000 ease-out`}
+                              style={{ width: `${percentage}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      );
+                    })}
                 </div>
+                
+                {quizData.accuracy && (
+                  <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 rounded-xl border border-blue-200 dark:border-blue-700">
+                    <div className="flex items-center">
+                      <svg className="w-6 h-6 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <div>
+                        <span className="font-bold text-blue-800 dark:text-blue-200 text-lg">Quiz Performance:</span>
+                        <div className="text-blue-700 dark:text-blue-300 font-semibold">
+                          {quizData.correctAnswers}/{quizData.totalQuestions} correct ({quizData.accuracy}%)
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              // Show stream results for stream quiz
+              <div className="glass dark:glass-dark p-8 rounded-2xl shadow-lg animate-scaleIn">
+                <h3 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white flex items-center">
+                  <svg className="w-8 h-8 mr-3 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  </svg>
+                  Academic Stream Analysis
+                </h3>
+                <div className="space-y-6">
+                  {Object.entries(quizResults.streamPercentages).map(([stream, percentage], index) => (
+                    <div key={stream} className="animate-slideIn" style={{animationDelay: `${index * 0.1}s`}}>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="font-semibold text-gray-800 dark:text-gray-200 text-lg capitalize">{stream}</span>
+                        <span className="text-lg font-bold text-indigo-600 dark:text-indigo-400">{percentage}%</span>
+                      </div>
+                      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+                        <div
+                          className="bg-gradient-to-r from-indigo-500 to-purple-500 h-3 rounded-full transition-all duration-1000 ease-out"
+                          style={{ width: `${percentage}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                {quizData.accuracy && (
+                  <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 rounded-xl border border-blue-200 dark:border-blue-700">
+                    <div className="flex items-center">
+                      <svg className="w-6 h-6 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <div>
+                        <span className="font-bold text-blue-800 dark:text-blue-200 text-lg">Quiz Performance:</span>
+                        <div className="text-blue-700 dark:text-blue-300 font-semibold">
+                          {quizData.correctAnswers}/{quizData.totalQuestions} correct ({quizData.accuracy}%)
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="text-center">
+            <div className="flex justify-center space-x-6 flex-wrap gap-4">
+              <button 
+                onClick={() => navigate('/quiz')} 
+                className="btn-animate px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+              >
+                <svg className="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Retake Assessment
+              </button>
+              {user ? (
+                <button 
+                  onClick={() => navigate('/profile')} 
+                  className="btn-animate px-8 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                >
+                  <svg className="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  View Profile
+                </button>
+              ) : (
+                <button 
+                  onClick={() => navigate('/register')} 
+                  className="btn-animate px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                >
+                  <svg className="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                  </svg>
+                  Save Results - Sign Up
+                </button>
               )}
             </div>
-          )}
-        </div>
-
-        {/* Action Buttons */}
-        <div className="text-center">
-          <div className="flex justify-center space-x-4 flex-wrap gap-2">
-            <button onClick={() => navigate('/quiz')} className="btn-secondary">
-              Retake Assessment
-            </button>
-            {user ? (
-              <button onClick={() => navigate('/dashboard')} className="btn-secondary">
-                View Dashboard
-              </button>
-            ) : (
-              <button onClick={() => navigate('/register')} className="btn-secondary">
-                Save Results - Sign Up
-              </button>
-            )}
           </div>
         </div>
       </div>

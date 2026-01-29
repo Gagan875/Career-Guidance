@@ -350,17 +350,32 @@ const Quiz = () => {
 
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="card text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your career assessment quiz...</p>
-          <p className="text-sm text-gray-500 mt-2">Selecting 5 questions from each stream</p>
-          <p className="text-xs text-green-600 mt-2">✓ No question repeats for 90 quizzes</p>
-          {user ? (
-            <p className="text-xs text-blue-500 mt-1">Logged in - Progress saved to account</p>
-          ) : (
-            <p className="text-xs text-gray-500 mt-1">Anonymous - Progress saved locally</p>
-          )}
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-purple-900 flex items-center justify-center">
+        <div className="text-center animate-fadeIn">
+          <div className="w-20 h-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-8 animate-pulse-custom shadow-2xl">
+            <svg className="w-10 h-10 text-white animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+          </div>
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Loading Your Career Assessment</h3>
+          <p className="text-lg text-gray-600 dark:text-gray-400 mb-2">Selecting 5 questions from each stream</p>
+          <div className="flex items-center justify-center space-x-6 text-sm">
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-green-600 dark:text-green-400 font-medium">No question repeats for 90 quizzes</span>
+            </div>
+            {user ? (
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                <span className="text-blue-500 font-medium">Progress saved to account</span>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-gray-500 rounded-full animate-pulse"></div>
+                <span className="text-gray-500 dark:text-gray-400 font-medium">Progress saved locally</span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     );
@@ -368,18 +383,23 @@ const Quiz = () => {
 
   if (error) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="card text-center">
-          <div className="text-red-500 mb-4">
-            <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z" />
-            </svg>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-purple-900 flex items-center justify-center">
+        <div className="max-w-md mx-auto px-4">
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-2xl rounded-3xl p-8 border border-white/20 text-center animate-fadeIn">
+            <div className="w-20 h-20 bg-red-100 dark:bg-red-900/30 rounded-3xl flex items-center justify-center mx-auto mb-6">
+              <svg className="w-10 h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Quiz Unavailable</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">{error}</p>
+            <button 
+              onClick={fetchQuestions} 
+              className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
+            >
+              Try Again
+            </button>
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Quiz Unavailable</h3>
-          <p className="text-gray-600 mb-4">{error}</p>
-          <button onClick={fetchQuestions} className="btn-primary">
-            Try Again
-          </button>
         </div>
       </div>
     );
@@ -387,84 +407,89 @@ const Quiz = () => {
 
   if (showResults) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="card text-center">
-          <div className="mb-8">
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <h1 className="text-3xl font-bold mb-4">Quiz Completed!</h1>
-            <p className="text-lg text-gray-600 mb-2">
-              Great job! You've completed the career assessment quiz.
-            </p>
-            <p className="text-gray-500">
-              To get your personalized career recommendations, please take our psychometric test.
-            </p>
-          </div>
-
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-lg mb-8">
-            <h2 className="text-xl font-semibold mb-3">What's Next?</h2>
-            <p className="text-gray-700 mb-4">
-              Our psychometric assessment will analyze your personality traits, work preferences, 
-              and combine them with your quiz results to provide accurate career recommendations.
-            </p>
-            <div className="flex items-center justify-center text-sm text-gray-600">
-              <span className="flex items-center mr-4">
-                <svg className="w-4 h-4 mr-1 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-purple-900 flex items-center justify-center">
+        <div className="max-w-4xl mx-auto px-4 py-8">
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-2xl rounded-3xl p-12 border border-white/20 text-center animate-fadeIn">
+            <div className="mb-12">
+              <div className="w-24 h-24 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-8 animate-bounce-custom shadow-2xl">
+                <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                20 Questions
-              </span>
-              {/* <span className="flex items-center mr-4">
-                <svg className="w-4 h-4 mr-1 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                </svg>
-                5-7 Minutes
-              </span> */}
-              <span className="flex items-center">
-                <svg className="w-4 h-4 mr-1 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Personalized Results
-              </span>
-            </div>
-          </div>
-
-          <div className="flex justify-center space-x-4 flex-wrap gap-2">
-            <button 
-              onClick={() => navigate('/psychometric-test', { state: { quizResults: results } })}
-              className="btn-primary text-lg px-8 py-3"
-            >
-              Take Psychometric Test
-            </button>
-            <button onClick={restartQuiz} className="btn-secondary">
-              Retake Quiz
-            </button>
-            {user && (
-              <button 
-                onClick={() => navigate('/dashboard')} 
-                className="btn-secondary"
-              >
-                View Quiz History
-              </button>
-            )}
-          </div>
-
-          <div className="mt-6 text-sm text-gray-500">
-            {user ? (
-              <div className="flex items-center justify-center">
-                <svg className="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-                <p className="text-green-600">
-                  {results?.saveMessage || "Your quiz results are permanently saved to your account"}
-                </p>
               </div>
-            ) : (
-              <p>Your quiz results are saved locally. Sign up to save permanently!</p>
-            )}
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent mb-6">Quiz Completed!</h1>
+              <p className="text-xl text-gray-600 dark:text-gray-400 mb-4">
+                Great job! You've completed the career assessment quiz.
+              </p>
+              <p className="text-lg text-gray-500 dark:text-gray-500">
+                To get your personalized career recommendations, please take our psychometric test.
+              </p>
+            </div>
+
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 p-8 rounded-2xl mb-12 border border-blue-200/50 dark:border-blue-700/50">
+              <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">What's Next?</h2>
+              <p className="text-gray-700 dark:text-gray-300 mb-6 text-lg leading-relaxed">
+                Our psychometric assessment will analyze your personality traits, work preferences, 
+                and combine them with your quiz results to provide accurate career recommendations.
+              </p>
+              <div className="flex items-center justify-center text-sm text-gray-600 dark:text-gray-400 space-x-8">
+                <span className="flex items-center">
+                  <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mr-3">
+                    <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <span className="font-medium">20 Questions</span>
+                </span>
+                <span className="flex items-center">
+                  <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mr-3">
+                    <svg className="w-5 h-5 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <span className="font-medium">Personalized Results</span>
+                </span>
+              </div>
+            </div>
+
+            <div className="flex justify-center space-x-6 flex-wrap gap-4 mb-8">
+              <button 
+                onClick={() => navigate('/psychometric-test', { state: { quizResults: results } })}
+                className="px-10 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+              >
+                Take Psychometric Test
+              </button>
+              <button 
+                onClick={restartQuiz} 
+                className="px-8 py-4 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-600 transition-all duration-200 font-medium"
+              >
+                Retake Quiz
+              </button>
+              {user && (
+                <button 
+                  onClick={() => navigate('/profile')} 
+                  className="px-8 py-4 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-600 transition-all duration-200 font-medium"
+                >
+                  View Quiz History
+                </button>
+              )}
+            </div>
+
+            <div className="text-sm">
+              {user ? (
+                <div className="flex items-center justify-center">
+                  <div className="w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mr-3">
+                    <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <p className="text-green-600 dark:text-green-400 font-medium">
+                    {results?.saveMessage || "Your quiz results are permanently saved to your account"}
+                  </p>
+                </div>
+              ) : (
+                <p className="text-gray-500 dark:text-gray-400">Your quiz results are saved locally. Sign up to save permanently!</p>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -498,92 +523,122 @@ const Quiz = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <div className="card">
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Career Assessment Quiz</h1>
-            <div className="text-right">
-              <div className={`text-2xl font-bold mb-1 ${getTimerColor()}`}>
-                {formatTime(timeRemaining)}
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-purple-900">
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-2xl rounded-3xl p-8 border border-white/20 animate-fadeIn">
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Career Assessment Quiz</h1>
+                <p className="text-gray-600 dark:text-gray-400 mt-2">Discover your ideal academic stream</p>
               </div>
-              <span className="text-sm text-gray-600 dark:text-gray-400">
-                Question {currentQuestion + 1} of {questions.length}
-              </span>
-              <div className="text-xs text-gray-500 dark:text-gray-500 capitalize">
-                {currentQ.stream} Stream • {currentQ.difficulty} • {currentQ.category}
+              <div className="text-right">
+                <div className={`text-3xl font-bold mb-2 ${getTimerColor()}`}>
+                  {formatTime(timeRemaining)}
+                </div>
+                <span className="text-sm text-gray-600 dark:text-gray-400 block">
+                  Question {currentQuestion + 1} of {questions.length}
+                </span>
+                <div className="text-xs text-gray-500 dark:text-gray-500 capitalize mt-1">
+                  {currentQ.stream} Stream • {currentQ.difficulty} • {currentQ.category}
+                </div>
               </div>
+            </div>
+
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-2">
+              <div
+                className="bg-gradient-to-r from-blue-600 to-purple-600 h-3 rounded-full transition-all duration-500 ease-out"
+                style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
+              ></div>
+            </div>
+            <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+              <span>Progress</span>
+              <span>{Math.round(((currentQuestion + 1) / questions.length) * 100)}%</span>
             </div>
           </div>
 
-          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-            <div
-              className="bg-primary-600 dark:bg-primary-500 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
-            ></div>
-          </div>
-        </div>
+          <div className="mb-10">
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 p-6 rounded-2xl border border-blue-200/50 dark:border-blue-700/50 mb-8">
+              <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white leading-relaxed">
+                {currentQ.question}
+              </h2>
+            </div>
 
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold mb-6">
-            {currentQ.question}
-          </h2>
-
-          <div className="space-y-3">
-            {currentQ.options.map((option, index) => {
-              const isSelected = selectedOption === option.value;
-              const previouslyAnswered = answers[currentQuestion]?.selectedOptionId === option.value;
-              
-              return (
-                <button
-                  key={option.value}
-                  onClick={() => handleAnswerSelect(option.value)}
-                  disabled={selectedOption !== null}
-                  className={`w-full p-4 text-left border-2 rounded-lg transition-all duration-300 ${
-                    isSelected
-                      ? 'border-primary-600 bg-primary-100 shadow-md transform scale-[1.02]'
-                      : previouslyAnswered
-                      ? 'border-primary-400 bg-primary-50'
-                      : 'border-gray-200 hover:border-primary-500 hover:bg-primary-50'
-                  } ${selectedOption !== null ? 'cursor-not-allowed' : 'cursor-pointer'}`}
-                >
-                  <div className="flex items-center">
-                    <span className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium mr-3 transition-colors ${
+            <div className="space-y-4">
+              {currentQ.options.map((option, index) => {
+                const isSelected = selectedOption === option.value;
+                const previouslyAnswered = answers[currentQuestion]?.selectedOptionId === option.value;
+                
+                return (
+                  <button
+                    key={option.value}
+                    onClick={() => handleAnswerSelect(option.value)}
+                    disabled={selectedOption !== null}
+                    className={`w-full p-6 text-left border-2 rounded-2xl transition-all duration-300 ${
                       isSelected
-                        ? 'bg-primary-600 text-white'
+                        ? 'border-blue-500 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 shadow-lg transform scale-[1.02]'
                         : previouslyAnswered
-                        ? 'bg-primary-400 text-white'
-                        : 'bg-gray-100 text-gray-700'
-                    }`}>
-                      {String.fromCharCode(65 + index)}
-                    </span>
-                    <span className={isSelected ? 'font-medium text-primary-800' : ''}>
-                      {option.text}
-                    </span>
-                  </div>
-                </button>
-              );
-            })}
+                        ? 'border-blue-400 bg-blue-50 dark:bg-blue-900/20'
+                        : 'border-gray-200 dark:border-gray-600 hover:border-blue-400 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900/10 dark:hover:to-purple-900/10'
+                    } ${selectedOption !== null ? 'cursor-not-allowed' : 'cursor-pointer hover:shadow-md'}`}
+                  >
+                    <div className="flex items-center">
+                      <span className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold mr-4 transition-colors ${
+                        isSelected
+                          ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
+                          : previouslyAnswered
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                      }`}>
+                        {String.fromCharCode(65 + index)}
+                      </span>
+                      <span className={`text-lg ${isSelected ? 'font-semibold text-blue-800 dark:text-blue-200' : 'text-gray-900 dark:text-gray-100'}`}>
+                        {option.text}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </div>
 
-        <div className="flex justify-between">
-          <button
-            onClick={goToPrevious}
-            disabled={currentQuestion === 0}
-            className={`btn-secondary ${currentQuestion === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
-          >
-            Previous Question
-          </button>
+          <div className="flex justify-between items-center pt-6 border-t border-gray-200 dark:border-gray-700">
+            <button
+              onClick={goToPrevious}
+              disabled={currentQuestion === 0}
+              className={`px-6 py-3 rounded-xl transition-all duration-200 font-medium ${
+                currentQuestion === 0 
+                  ? 'opacity-50 cursor-not-allowed bg-gray-100 dark:bg-gray-700 text-gray-500' 
+                  : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600'
+              }`}
+            >
+              Previous Question
+            </button>
 
-          <div className="text-sm text-gray-500">
-            5 questions per stream • Database powered
-            <span className="text-green-600 ml-2">• No repeats (90 quizzes)</span>
-            {user ? (
-              <span className="text-blue-500 ml-2">• Account sync</span>
-            ) : (
-              <span className="text-gray-500 ml-2">• Local storage</span>
-            )}
+            <div className="text-center">
+              <div className="text-sm text-gray-500 dark:text-gray-400 space-y-1">
+                <div>5 questions per stream • Database powered</div>
+                <div className="flex items-center justify-center space-x-4">
+                  <span className="flex items-center space-x-1">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span className="text-green-600 dark:text-green-400">No repeats (90 quizzes)</span>
+                  </span>
+                  {user ? (
+                    <span className="flex items-center space-x-1">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                      <span className="text-blue-500">Account sync</span>
+                    </span>
+                  ) : (
+                    <span className="flex items-center space-x-1">
+                      <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
+                      <span className="text-gray-500 dark:text-gray-400">Local storage</span>
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="w-32"></div> {/* Spacer for alignment */}
           </div>
         </div>
       </div>

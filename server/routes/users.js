@@ -150,4 +150,121 @@ router.get('/saved-items', auth, async (req, res) => {
   }
 });
 
+// Save a college
+router.post('/save-college', auth, async (req, res) => {
+  try {
+    console.log('Save college request received');
+    console.log('User ID:', req.user.id);
+    console.log('Request body:', req.body);
+    
+    const { collegeId, notes, priority } = req.body;
+
+    if (!collegeId) {
+      console.log('Missing college ID');
+      return res.status(400).json({
+        success: false,
+        message: 'College ID is required'
+      });
+    }
+
+    // Check if college exists
+    const College = require('../models/College');
+    const college = await College.findById(collegeId);
+    if (!college) {
+      console.log('College not found:', collegeId);
+      return res.status(404).json({
+        success: false,
+        message: 'College not found'
+      });
+    }
+
+    console.log('College found:', college.name);
+
+    // Find or create profile
+    let profile = await Profile.findOne({ userId: req.user.id });
+    if (!profile) {
+      console.log('Creating new profile for user');
+      profile = new Profile({
+        userId: req.user.id,
+        location: { state: '', city: '' }, // Required fields
+        savedItems: { colleges: [], courses: [], careers: [] }
+      });
+    }
+
+    // Check if college is already saved
+    const existingCollege = profile.savedItems.colleges.find(
+      item => item.collegeId.toString() === collegeId
+    );
+
+    if (existingCollege) {
+      console.log('College already saved');
+      return res.status(400).json({
+        success: false,
+        message: 'College is already saved'
+      });
+    }
+
+    // Add college to saved items
+    profile.savedItems.colleges.push({
+      collegeId,
+      notes: notes || '',
+      priority: priority || 'medium',
+      savedAt: new Date()
+    });
+
+    await profile.save();
+    console.log('College saved successfully');
+
+    res.json({
+      success: true,
+      message: 'College saved successfully',
+      savedCollege: {
+        collegeId,
+        collegeName: college.name,
+        notes: notes || '',
+        priority: priority || 'medium'
+      }
+    });
+  } catch (error) {
+    console.error('Save college error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
+    });
+  }
+});
+
+// Remove a saved college
+router.delete('/save-college/:collegeId', auth, async (req, res) => {
+  try {
+    const { collegeId } = req.params;
+
+    const profile = await Profile.findOne({ userId: req.user.id });
+    if (!profile) {
+      return res.status(404).json({
+        success: false,
+        message: 'Profile not found'
+      });
+    }
+
+    // Remove college from saved items
+    profile.savedItems.colleges = profile.savedItems.colleges.filter(
+      item => item.collegeId.toString() !== collegeId
+    );
+
+    await profile.save();
+
+    res.json({
+      success: true,
+      message: 'College removed from saved items'
+    });
+  } catch (error) {
+    console.error('Remove saved college error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
+    });
+  }
+});
+
 module.exports = router;
