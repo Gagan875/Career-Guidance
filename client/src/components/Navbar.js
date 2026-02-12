@@ -62,6 +62,19 @@ const Navbar = () => {
               <div className="absolute inset-0 bg-purple-100 dark:bg-purple-900 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-300 opacity-0 group-hover:opacity-100"></div>
             </Link>
             
+            <Link 
+              to="/ml-recommendations" 
+              className="relative px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-pink-600 dark:hover:text-pink-400 transition-all duration-300 font-medium group"
+            >
+              <span className="relative z-10 flex items-center space-x-1">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+                <span>AI Recommendations</span>
+              </span>
+              <div className="absolute inset-0 bg-pink-100 dark:bg-pink-900 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-300 opacity-0 group-hover:opacity-100"></div>
+            </Link>
+            
             {user ? (
               <div className="flex items-center space-x-6">
                 <Link 
@@ -169,6 +182,14 @@ const Navbar = () => {
                 className="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900 transition-all duration-300"
               >
                 Courses
+              </Link>
+              
+              <Link
+                to="/ml-recommendations"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-900 transition-all duration-300"
+              >
+                AI Recommendations
               </Link>
 
               {user ? (

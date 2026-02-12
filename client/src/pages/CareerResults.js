@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import '../styles/animations.css';
@@ -10,6 +10,27 @@ const CareerResults = () => {
   
   // Get both quiz and psychometric results (either stream quiz or field quiz)
   const { quizResults, fieldQuizResults, psychometricResults } = location.state || {};
+
+  // Save results to localStorage when component loads
+  useEffect(() => {
+    if (psychometricResults) {
+      try {
+        // Save psychometric results
+        localStorage.setItem('lastPsychometricResults', JSON.stringify(psychometricResults));
+        
+        // Save quiz results (both stream and field)
+        const quizData = {
+          quizResults: quizResults || null,
+          fieldQuizResults: fieldQuizResults || null
+        };
+        localStorage.setItem('lastQuizResults', JSON.stringify(quizData));
+        
+        console.log('✅ Results saved to localStorage for ML recommendations');
+      } catch (error) {
+        console.error('❌ Error saving results to localStorage:', error);
+      }
+    }
+  }, [quizResults, fieldQuizResults, psychometricResults]);
 
   if ((!quizResults && !fieldQuizResults) || !psychometricResults) {
     return (
@@ -694,6 +715,18 @@ const CareerResults = () => {
           <div className="text-center">
             <div className="flex justify-center space-x-6 flex-wrap gap-4">
               <button 
+                onClick={() => navigate('/ml-recommendations', {
+                  state: { quizResults, fieldQuizResults, psychometricResults }
+                })} 
+                className="btn-animate px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+              >
+                <svg className="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+                Advanced ML Recommendations
+              </button>
+              
+              <button 
                 onClick={() => navigate('/quiz')} 
                 className="btn-animate px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
               >
@@ -715,7 +748,7 @@ const CareerResults = () => {
               ) : (
                 <button 
                   onClick={() => navigate('/register')} 
-                  className="btn-animate px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                  className="btn-animate px-8 py-4 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
                 >
                   <svg className="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />

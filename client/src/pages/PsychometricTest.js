@@ -308,16 +308,31 @@ const PsychometricTest = () => {
       });
     }
 
+    const psychometricResults = {
+      personalityTraits: enhancedScores,
+      answers: finalAnswers,
+      rawScores: traitScores // Keep original scores for reference
+    };
+
+    // Save results to localStorage for direct access to ML recommendations
+    try {
+      console.log('💾 Saving results to localStorage...');
+      localStorage.setItem('lastPsychometricResults', JSON.stringify(psychometricResults));
+      localStorage.setItem('lastQuizResults', JSON.stringify({
+        quizResults,
+        fieldQuizResults
+      }));
+      console.log('✅ Results saved successfully to localStorage');
+    } catch (error) {
+      console.error('❌ Error saving results to localStorage:', error);
+    }
+
     // Navigate to combined results page
     navigate('/career-results', {
       state: {
         quizResults,
         fieldQuizResults,
-        psychometricResults: {
-          personalityTraits: enhancedScores,
-          answers: finalAnswers,
-          rawScores: traitScores // Keep original scores for reference
-        }
+        psychometricResults
       }
     });
   };

@@ -18,6 +18,18 @@ const collegeSchema = new mongoose.Schema({
     coordinates: {
       latitude: Number,
       longitude: Number
+    },
+    // GeoJSON format for MongoDB geospatial queries
+    geometry: {
+      type: {
+        type: String,
+        enum: ['Point'],
+        default: 'Point'
+      },
+      coordinates: {
+        type: [Number], // [longitude, latitude]
+        index: '2dsphere'
+      }
     }
   },
   contact: {
@@ -52,6 +64,19 @@ const collegeSchema = new mongoose.Schema({
     hostelFee: Number,
     otherFees: Number
   },
+  ranking: {
+    type: Number,
+    min: 1,
+    max: 1000
+  },
+  accreditation: {
+    naac: {
+      grade: String,
+      score: Number
+    },
+    nba: Boolean,
+    ugc: Boolean
+  },
   rating: {
     type: Number,
     min: 0,
@@ -72,6 +97,20 @@ const collegeSchema = new mongoose.Schema({
   }]
 }, {
   timestamps: true
+});
+
+// Create geospatial index for location-based queries
+collegeSchema.index({ "location.geometry": "2dsphere" });
+
+// Pre-save middleware to create GeoJSON from coordinates
+collegeSchema.pre('save', function(next) {
+  if (this.location && this.location.coordinates && this.location.coordinates.latitude && this.location.coordinates.longitude) {
+    this.location.geometry = {
+      type: 'Point',
+      coordinates: [this.location.coordinates.longitude, this.location.coordinates.latitude]
+    };
+  }
+  next();
 });
 
 module.exports = mongoose.model('College', collegeSchema);

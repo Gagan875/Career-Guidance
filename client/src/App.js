@@ -10,6 +10,7 @@ import Quiz from './pages/Quiz';
 import FieldQuiz from './pages/FieldQuiz';
 import PsychometricTest from './pages/PsychometricTest';
 import CareerResults from './pages/CareerResults';
+import MLRecommendations from './pages/MLRecommendations';
 import Colleges from './pages/Colleges';
 import Courses from './pages/Courses';
 import Profile from './pages/Profile';
@@ -32,6 +33,7 @@ function App() {
               <Route path="/field-quiz" element={<FieldQuiz />} />
               <Route path="/psychometric-test" element={<PsychometricTest />} />
               <Route path="/career-results" element={<CareerResults />} />
+              <Route path="/ml-recommendations" element={<MLRecommendations />} />
               <Route path="/colleges" element={<Colleges />} />
               <Route path="/courses" element={<Courses />} />
               <Route path="/profile" element={

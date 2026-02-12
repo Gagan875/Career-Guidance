@@ -11,6 +11,7 @@ const streamQuizRoutes = require('./routes/streamQuiz');
 const fieldQuizRoutes = require('./routes/fieldQuiz');
 const collegeRoutes = require('./routes/colleges');
 const courseRoutes = require('./routes/courses');
+const recommendationRoutes = require('./routes/recommendations');
 
 const app = express();
 
@@ -27,6 +28,20 @@ app.use('/api/stream-quiz', streamQuizRoutes);
 app.use('/api/field-quiz', fieldQuizRoutes);
 app.use('/api/colleges', collegeRoutes);
 app.use('/api/courses', courseRoutes);
+app.use('/api/recommendations', recommendationRoutes);
+
+console.log('✅ All routes registered successfully');
+
+// Add a test route to verify server is working
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'Server is working!', timestamp: new Date() });
+});
+
+// Add debugging middleware to log all requests
+app.use((req, res, next) => {
+  console.log(`📝 ${req.method} ${req.path} - ${new Date().toISOString()}`);
+  next();
+});
 
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI)
