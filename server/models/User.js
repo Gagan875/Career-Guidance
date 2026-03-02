@@ -74,6 +74,56 @@ const userSchema = new mongoose.Schema({
   savedCourses: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Course'
+  }],
+  // Field selection quiz data (for Class 12 students)
+  fieldQuizResults: [{
+    answers: [{
+      questionId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Question'
+      },
+      selectedOptionId: String
+    }],
+    results: {
+      totalQuestions: Number,
+      correctAnswers: Number,
+      accuracy: Number,
+      fieldCorrectAnswers: {
+        engineering: Number,
+        medical: Number,
+        business: Number,
+        law: Number,
+        design: Number
+      },
+      fieldPercentages: {
+        engineering: Number,
+        medical: Number,
+        business: Number,
+        law: Number,
+        design: Number
+      },
+      recommendations: [{
+        field: String,
+        percentage: Number,
+        correctCount: Number,
+        totalQuestions: Number
+      }]
+    },
+    completedAt: {
+      type: Date,
+      default: Date.now
+    },
+    quizType: {
+      type: String,
+      default: 'field-selection'
+    },
+    score: Number,
+    totalQuestions: Number,
+    fieldRecommendations: [String]
+  }],
+  usedFieldQuestions: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Question'
   }]
 }, {
   timestamps: true
