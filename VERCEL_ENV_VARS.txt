@@ -1,0 +1,34 @@
+VERCEL ENVIRONMENT VARIABLES - COPY & PASTE
+================================================
+
+Copy these exact values when adding environment variables in Vercel:
+
+1. MONGODB_URI
+mongodb+srv://12326gaganrawal:Gagan123@cluster0.gojsesn.mongodb.net/digital_guidance_platform?retryWrites=true&w=majority
+
+2. JWT_SECRET
+career_guidance_team_secret_2024_development
+
+3. NODE_ENV
+production
+
+4. PORT
+5000
+
+5. OPENROUTE_API_KEY
+eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjNiNzFhYmUzOTllODQxNzRhMTg0MTA3MWIyZWJhNTQ2IiwiaCI6Im11cm11cjY0In0=
+
+================================================
+IMPORTANT: Select all three environments for each variable:
+✓ Production
+✓ Preview
+✓ Development
+================================================
+
+BUILD SETTINGS:
+- Framework Preset: Other
+- Build Command: npm run vercel-build
+- Output Directory: client/build
+- Install Command: npm run install-all
+
+================================================
