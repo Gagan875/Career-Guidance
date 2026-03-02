@@ -5,7 +5,15 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "seed-questions": "node seedQuestions.js",
+    "seed-colleges": "node seedColleges.js",
+    "seed-courses": "node seedCourses.js",
+    "seed-all": "npm run seed-questions && npm run seed-colleges && npm run seed-courses",
+    "check-questions": "node checkQuestions.js",
+    "test-no-repeat": "node testNoRepeat.js",
+    "test-connection": "node test-connection.js",
+    "debug-connection": "node debug-connection.js"
   },
   "dependencies": {
     "express": "^4.18.2",

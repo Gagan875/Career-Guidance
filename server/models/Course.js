@@ -12,7 +12,7 @@ const courseSchema = new mongoose.Schema({
   },
   stream: {
     type: String,
-    enum: ['science', 'commerce', 'arts', 'vocational', 'engineering', 'medical'],
+    enum: ['science', 'commerce', 'arts', 'diploma', 'engineering', 'medical'],
     required: true
   },
   degree: {

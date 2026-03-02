@@ -37,7 +37,7 @@ const userSchema = new mongoose.Schema({
     academicBackground: {
       stream: {
         type: String,
-        enum: ['science', 'commerce', 'arts', 'vocational']
+        enum: ['science', 'commerce', 'arts', 'diploma']
       },
       subjects: [String],
       percentage: Number
@@ -47,10 +47,25 @@ const userSchema = new mongoose.Schema({
     quizType: String,
     score: Number,
     recommendations: [String],
+    questionsUsed: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Question'
+    }],
     completedAt: {
       type: Date,
       default: Date.now
     }
+  }],
+  questionHistory: [{
+    questionId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Question'
+    },
+    usedAt: {
+      type: Date,
+      default: Date.now
+    },
+    quizNumber: Number
   }],
   savedColleges: [{
     type: mongoose.Schema.Types.ObjectId,

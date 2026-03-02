@@ -23,7 +23,7 @@ const quizSchema = new mongoose.Schema({
         science: { type: Number, default: 0 },
         commerce: { type: Number, default: 0 },
         arts: { type: Number, default: 0 },
-        vocational: { type: Number, default: 0 }
+        diploma: { type: Number, default: 0 }
       }
     }],
     category: String
@@ -44,7 +44,7 @@ const quizSchema = new mongoose.Schema({
       maxScore: Number,
       description: String
     },
-    vocational: {
+    diploma: {
       minScore: Number,
       maxScore: Number,
       description: String

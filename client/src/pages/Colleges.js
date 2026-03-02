@@ -66,7 +66,7 @@ const Colleges = () => {
       courses: [
         { name: 'Bachelor of Arts', code: 'BA', stream: 'arts' },
         { name: 'Bachelor of Science', code: 'B.Sc', stream: 'science' },
-        { name: 'Bachelor of Computer Applications', code: 'BCA', stream: 'vocational' }
+        { name: 'Bachelor of Computer Applications', code: 'BCA', stream: 'diploma' }
       ],
       facilities: {
         hostel: false,
@@ -130,11 +130,11 @@ const Colleges = () => {
 
   const filteredColleges = colleges.filter(college => {
     const matchesSearch = college.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         college.location.city.toLowerCase().includes(searchTerm.toLowerCase());
+      college.location.city.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesState = !filters.state || college.location.state === filters.state;
     const matchesDistrict = !filters.district || college.location.district === filters.district;
     const matchesType = !filters.type || college.type === filters.type;
-    
+
     return matchesSearch && matchesState && matchesDistrict && matchesType;
   });
 
@@ -178,7 +178,7 @@ const Colleges = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">State</label>
             <select
@@ -192,7 +192,7 @@ const Colleges = () => {
               <option value="Karnataka">Karnataka</option>
             </select>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">District</label>
             <select
@@ -206,7 +206,7 @@ const Colleges = () => {
               <option value="Bangalore Urban">Bangalore Urban</option>
             </select>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
             <select
