@@ -9,11 +9,18 @@
     "client": "cd client && npm start",
     "build": "cd client && npm run build",
     "install-all": "npm install && cd client && npm install && cd ../server && npm install",
+    "vercel-build": "cd client && npm install && npm run build",
+    "deploy": "vercel --prod",
+    "deploy-preview": "vercel",
     "setup": "node setup.js"
   },
   "keywords": ["education", "career-guidance", "student-platform"],
   "author": "Digital Guidance Team",
   "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
   "devDependencies": {
     "concurrently": "^8.2.2"
   }
