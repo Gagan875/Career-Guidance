@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import API_BASE_URL from '../config/api';
 import '../styles/animations.css';
 
 const FieldQuiz = () => {
@@ -46,7 +47,7 @@ const FieldQuiz = () => {
       setLoading(true);
       setError(null); // Clear any previous errors
 
-      let url = 'http://localhost:5000/api/field-quiz/random';
+      let url = `${API_BASE_URL}/api/field-quiz/random`;
 
       if (user && user._id) {
         url += `?userId=${user._id}`;
@@ -169,7 +170,7 @@ const FieldQuiz = () => {
         };
 
         try {
-          const response = await fetch('http://localhost:5000/api/field-quiz/submit', {
+          const response = await fetch(`${API_BASE_URL}/api/field-quiz/submit`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

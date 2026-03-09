@@ -61,7 +61,7 @@ const Profile = () => {
         return;
       }
 
-      const response = await axios.get('http://localhost:5000/api/profile', {
+      const response = await axios.get('${API_BASE_URL}/api/profile', {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -146,7 +146,7 @@ const Profile = () => {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      const response = await axios.get('http://localhost:5000/api/users/saved-items', {
+      const response = await axios.get('${API_BASE_URL}/api/users/saved-items', {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -163,7 +163,7 @@ const Profile = () => {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      const response = await axios.get('http://localhost:5000/api/users/me', {
+      const response = await axios.get('${API_BASE_URL}/api/users/me', {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -185,7 +185,7 @@ const Profile = () => {
   const handleRemoveSavedCollege = async (collegeId) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/users/save-college/${collegeId}`, {
+      await axios.delete(`${API_BASE_URL}/api/users/save-college/${collegeId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -245,7 +245,7 @@ const Profile = () => {
         }
       };
 
-      const response = await axios.put('http://localhost:5000/api/profile', profileData, {
+      const response = await axios.put('${API_BASE_URL}/api/profile', profileData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       

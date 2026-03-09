@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
+import API_BASE_URL from '../config/api';
 import '../styles/animations.css';
 
 const Courses = () => {
@@ -27,7 +28,7 @@ const Courses = () => {
       if (filters.degree) queryParams.append('degree', filters.degree);
       queryParams.append('limit', '50'); // Get more courses
 
-      const response = await axios.get(`http://localhost:5000/api/courses?${queryParams}`);
+      const response = await axios.get(`${API_BASE_URL}/api/courses?${queryParams}`);
       setCourses(response.data.courses);
       
       // Extract unique streams for filters

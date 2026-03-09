@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
+import API_BASE_URL from '../config/api';
 import '../styles/animations.css';
 
 const Colleges = () => {
@@ -43,7 +44,7 @@ const Colleges = () => {
       if (filters.type) queryParams.append('type', filters.type);
       queryParams.append('limit', '50');
 
-      const response = await axios.get(`http://localhost:5000/api/colleges?${queryParams}`);
+      const response = await axios.get(`${API_BASE_URL}/api/colleges?${queryParams}`);
       setColleges(response.data.colleges);
       
       const uniqueStates = [...new Set(response.data.colleges.map(college => college.location.state))];
@@ -78,7 +79,7 @@ const Colleges = () => {
 
   const handleViewDetails = async (collegeId) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/colleges/${collegeId}`);
+      const response = await axios.get(`${API_BASE_URL}/api/colleges/${collegeId}`);
       setSelectedCollege(response.data);
       setShowModal(true);
     } catch (error) {
@@ -89,7 +90,7 @@ const Colleges = () => {
   const fetchSavedColleges = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/users/saved-items', {
+      const response = await axios.get(`${API_BASE_URL}/api/users/saved-items`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const savedCollegeIds = new Set(
@@ -112,7 +113,7 @@ const Colleges = () => {
       const token = localStorage.getItem('token');
 
       if (savedColleges.has(collegeId)) {
-        await axios.delete(`http://localhost:5000/api/users/save-college/${collegeId}`, {
+        await axios.delete(`${API_BASE_URL}/api/users/save-college/${collegeId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setSavedColleges(prev => {
@@ -122,7 +123,7 @@ const Colleges = () => {
         });
         alert('College removed from saved items');
       } else {
-        await axios.post('http://localhost:5000/api/users/save-college', {
+        await axios.post(`${API_BASE_URL}/api/users/save-college`, {
           collegeId,
           priority: 'medium'
         }, {

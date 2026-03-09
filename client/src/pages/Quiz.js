@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import API_BASE_URL from '../config/api';
 import '../utils/quizUtils.js'; // Import utilities for console access
 
 const Quiz = () => {
@@ -48,7 +49,7 @@ const Quiz = () => {
   const checkSavedResults = async () => {
     try {
       console.log('Checking for saved quiz results...');
-      const response = await fetch('http://localhost:5000/api/stream-quiz/results', {
+      const response = await fetch(`${API_BASE_URL}/api/stream-quiz/results`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -75,7 +76,7 @@ const Quiz = () => {
       setLoading(true);
 
       // Build URL with user ID or exclude IDs
-      let url = 'http://localhost:5000/api/stream-quiz/random';
+      let url = `${API_BASE_URL}/api/stream-quiz/random`;
 
       if (user && user._id) {
         // Logged-in user: use database tracking
@@ -194,7 +195,7 @@ const Quiz = () => {
         quizType: 'career-assessment'
       };
 
-      const response = await fetch('http://localhost:5000/api/stream-quiz/submit', {
+      const response = await fetch(`${API_BASE_URL}/api/stream-quiz/submit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
