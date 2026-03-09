@@ -2,6 +2,13 @@
 
 A personalized career and education advisor platform for students built with React and Node.js.
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Visit%20Site-brightgreen?style=for-the-badge&logo=vercel)](https://career-guidance-fawn.vercel.app)
+[![Deployment Status](https://img.shields.io/badge/Deployment-Active-success?style=for-the-badge)](https://career-guidance-fawn.vercel.app)
+
+## 🚀 Live Application
+
+**Visit the live application:** [https://career-guidance-fawn.vercel.app](https://career-guidance-fawn.vercel.app)
+
 ## Features
 
 - **User Authentication**: Secure login and registration system
