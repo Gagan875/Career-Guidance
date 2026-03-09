@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm install && cd client && npm install && npm run build && cd ../server && npm install",
+  "buildCommand": "npm install && cd client && npm install && node node_modules/react-scripts/bin/react-scripts.js build && cd ../server && npm install",
   "outputDirectory": "client/build",
   "installCommand": "npm install",
   "framework": null,
